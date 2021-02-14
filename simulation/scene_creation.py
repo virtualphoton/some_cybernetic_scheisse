@@ -8,25 +8,22 @@ from simulation.robot import Robot
 physicsClient = pb.connect(pb.GUI)
 
 
-def reset_sim():
+def reset_and_start_sim():
     pb.resetSimulation()
     pb.setAdditionalSearchPath(pb_data.getDataPath())
     plane = pb.loadURDF("plane.urdf")
     robot = Robot()
+    pb.setGravity(0, 0, 0)  # everything should fall down
+    pb.setTimeStep(0.01)  # this slows everything down, but let's be accurate...
+    pb.setRealTimeSimulation(0)  # we want to be faster than real time :)
     return robot
 
 
-def start_sim():
-    pb.setGravity(0, 0, -10)  # everything should fall down
-    pb.setTimeStep(0.01)  # this slows everything down, but let's be accurate...
-    pb.setRealTimeSimulation(1)  # we want to be faster than real time :)
-
-
 def main():
-    reset_sim()
-    start_sim()
+    robot = reset_and_start_sim()
     camera = Camera()
     camera.get_frame()
+    robot.move_to([5, 5])
     time.sleep(100)
 
 
