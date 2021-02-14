@@ -7,9 +7,7 @@ def image_bin(path):
 
 
 class Camera:
-    def __init__(self):
-        path = r'C:\Users\bkmz1\Documents\books\python\some_cybernetic_scheisse\bloggif_frames_gif\frame-{}.gif'
-        self.frames = [image_bin(path.format(i)) for i in range(1, 5)]
+    PATH = r'C:\Users\bkmz1\Documents\books\python\some_cybernetic_scheisse\out.jpg'
 
-    def get_frame(self, state):
-        return self.frames[state]
+    def get_frame(self):
+        return image_bin(Camera.PATH)

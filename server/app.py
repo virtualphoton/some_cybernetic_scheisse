@@ -11,13 +11,11 @@ def index():
 
 
 def gen(camera):
-    state = 0
     while True:
-        frame = camera.get_frame(state)
+        frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        state = (state + 1) % 4
-        time.sleep(0.1)
+        time.sleep(1/24)
 
 
 @app.route('/video_feed')
