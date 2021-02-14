@@ -1,6 +1,7 @@
 import pybullet as pb
 import pybullet_data as pb_data
-import time
+
+import asyncio
 
 from simulation.camera import Camera
 from simulation.robot import Robot
@@ -19,13 +20,15 @@ def reset_and_start_sim():
     return robot
 
 
-def main():
+async def main():
     robot = reset_and_start_sim()
     camera = Camera()
-    camera.get_frame()
-    robot.move_to([9, 9])
+    await asyncio.gather(robot.move_to([3, 3]),
+                         camera.get_and_write_frame_loop())
 
+    # to prevent some bugs with asyncio not closing lopo
+    await asyncio.sleep(0.1)
 
 
 if __name__ == '__main__':
-    main()
+    asyncio.run(main())

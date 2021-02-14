@@ -1,7 +1,7 @@
 import pybullet as pb
 import numpy as np
-import time
 from simulation.useful_funcs import normalize
+import asyncio
 
 
 class Robot:
@@ -14,7 +14,7 @@ class Robot:
         cube_start_orientation = pb.getQuaternionFromEuler([0, 0, 0])
         self.robot = pb.loadURDF("r2d2.urdf", cube_start_pos, cube_start_orientation)
 
-    def move_to(self, new_coords):
+    async def move_to(self, new_coords):
         """
         moves objects to selected coordinated
         :param new_coords: (x, y)
@@ -37,7 +37,7 @@ class Robot:
             pb.applyExternalForce(self.robot, linkIndex=-1, forceObj=self.get_force(new_coords), posObj=obj_coords,
                                   flags=pb.WORLD_FRAME)
 
-            time.sleep(Robot.TIME_DELTA)
+            await asyncio.sleep(Robot.TIME_DELTA)
 
     def check_bounds(self):
         """
