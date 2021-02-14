@@ -21,6 +21,7 @@ class Robot:
         """
         new_coords = np.array(list(new_coords) + [0])
         pb.resetBaseVelocity(self.robot, (0, 0, 0))
+        await asyncio.sleep(4)
         while True:
             pb.stepSimulation()
 
@@ -30,6 +31,8 @@ class Robot:
             # stop motion
             if np.linalg.norm(obj_new_coords - new_coords) < 0.1:
                 pb.resetBaseVelocity(self.robot, (0, 0, 0))
+                await asyncio.sleep(Robot.TIME_DELTA)
+                continue
                 return
 
             # move

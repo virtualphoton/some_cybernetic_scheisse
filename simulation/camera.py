@@ -1,11 +1,11 @@
 import pybullet as pb
 from PIL import Image as im
-import asyncio
+import io
 
 
 class Camera:
-    TIME_DELTA = 1/10
-    PATH = r'C:\Users\bkmz1\Documents\books\python\some_cybernetic_scheisse\out.jpg'
+    TIME_DELTA = 1 / 10
+    QUALITY = 80
 
     default_size = {
         'width': 400,
@@ -33,16 +33,17 @@ class Camera:
         }
 
     def get_frame(self):
+        """
+        returns RGBA array of size (x, y, 4)
+        """
         return pb.getCameraImage(**self.cam_image_kwargs)[2]
 
-    def write_frame(self, frame):
-        im.fromarray(frame).convert('RGB').save(Camera.PATH, "JPEG", quality=80, optimize=True, progressive=True)
-
-    async def get_and_write_frame_loop(self):
+    def get_frame_bytes(self):
         """
-        takes photo from camera and writes it to 'out.jpg' file
-        then sleeps to make 24 fps
+        returns frames as bytes string
         """
-        while True:
-            self.write_frame(self.get_frame())
-            await asyncio.sleep(Camera.TIME_DELTA)
+        rgba_img = self.get_frame()
+        # some magic to get bytestring
+        output = io.BytesIO()
+        im.fromarray(rgba_img).convert('RGB').save(output, format='JPEG', quality=Camera.QUALITY)
+        return output.getvalue()

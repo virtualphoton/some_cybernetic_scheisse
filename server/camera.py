@@ -1,4 +1,5 @@
-from time import time
+import websockets
+import asyncio
 
 
 def image_bin(path):
@@ -6,8 +7,14 @@ def image_bin(path):
         return f.read()
 
 
+# singleton
 class Camera:
-    PATH = r'C:\Users\bkmz1\Documents\books\python\some_cybernetic_scheisse\out.jpg'
+    @staticmethod
+    async def get_frame_from_socket():
+        uri = "ws://localhost:8765"
+        async with websockets.connect(uri) as websocket:
+            return await websocket.recv()
 
-    def get_frame(self):
-        return image_bin(Camera.PATH)
+    @staticmethod
+    def get_frame():
+        return asyncio.run(Camera.get_frame_from_socket())
