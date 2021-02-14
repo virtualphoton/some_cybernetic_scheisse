@@ -5,7 +5,7 @@ import time
 from simulation.camera import Camera
 from simulation.robot import Robot
 
-physicsClient = pb.connect(pb.GUI)
+physicsClient = pb.connect(pb.DIRECT)
 
 
 def reset_and_start_sim():
@@ -23,8 +23,8 @@ def main():
     robot = reset_and_start_sim()
     camera = Camera()
     camera.get_frame()
-    robot.move_to([5, 5])
-    time.sleep(100)
+    robot.move_to([9, 9])
+
 
 
 if __name__ == '__main__':
