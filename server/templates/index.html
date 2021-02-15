@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>Video Streaming Demonstration</title>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css"/>
+  </head>
+  <body>
+    <img src="{{ url_for('video_feed') }}">
+    <script src="{{ url_for('static', filename='/js/terminal.js') }}"></script>
+  </body>
+</html>
