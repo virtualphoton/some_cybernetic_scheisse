@@ -5,7 +5,7 @@ import asyncio
 
 from simulation.camera import Camera
 from simulation.robot import Robot
-from simulation.server import start_server_loop
+from simulation.server import image_sender_server, command_communicator
 
 physicsClient = pb.connect(pb.DIRECT)
 
@@ -23,8 +23,9 @@ def reset_and_start_sim():
 async def main():
     robot = reset_and_start_sim()
     camera = Camera()
-    await asyncio.gather(robot.move_to([3, 3]),
-                         start_server_loop(camera))
+    await asyncio.gather(robot.move(),
+                         image_sender_server(camera),
+                         command_communicator(robot, camera))
 
     # to prevent some bugs with asyncio not closing loop
     await asyncio.sleep(0.1)

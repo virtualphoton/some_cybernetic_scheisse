@@ -1,6 +1,7 @@
-from flask import Flask, render_template, Response
-from server.camera import Camera
+from flask import Flask, render_template, Response, request, abort, session, jsonify
+from server.simulation_connection import Camera, CommandSender
 import time
+import json
 
 app = Flask(__name__)
 
@@ -21,6 +22,13 @@ def gen(camera):
 def video_feed():
     return Response(gen(Camera()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/send_command', methods=['POST'])
+def send_command():
+    req_data = request.json
+    jsoned = json.dumps(req_data).encode()
+    return jsonify(CommandSender().send_command(jsoned).decode())
 
 
 if __name__ == '__main__':
