@@ -2,6 +2,6 @@
 
 Required packages are in requirements.txt
 
-To run server, `simulation/main.py` has to be run first, then `server/app.py`
+Run `simulation/main.py` for simulation and `server/app.py` for main server
 
-Simulation script will probably stay alive even after server's death. Same is not true about the server
+These scripts probably won't fall when another one is stopped

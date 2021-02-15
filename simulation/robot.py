@@ -53,12 +53,11 @@ class Robot:
     def check_bounds(self):
         """
         check if object is inside 10x10 area and bounces it back if not
-        :return:
         """
         k = 1.2
         velocity = np.array(pb.getBaseVelocity(self.robot)[0])
         coords = self.get_pos()
-        velocity[coords > Robot.BOUNCE_BORDERS] *= -k
+        velocity[abs(coords) > Robot.BOUNCE_BORDERS] *= -k
         pb.resetBaseVelocity(self.robot, velocity)
 
     def get_pos(self):
