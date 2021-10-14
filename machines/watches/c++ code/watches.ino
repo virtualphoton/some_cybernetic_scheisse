@@ -49,18 +49,27 @@ public:
         ttgo->tft->fillRect (x, y, dx, dy, color);
         x += dx;
         ind += 1;
-        sleep_(.01);
       }
       x = 15;
       y += dy;
     }
-    
+    Serial.println("Done QR!");
   }
-  void show_data(){};
+  void show_data(){
+    while(true){
+      if (Serial.available()){
+        ttgo->tft->setTextColor(TFT_GREEN, TFT_BLACK);
+        ttgo->tft->setCursor(0, 0);
+        ttgo->tft->print(Serial.parseFloat());
+      }
+      sleep(.2);
+    }
+  }
 };
 
 State* state = new State;
 void setup(){
+  Serial.begin(115200);
   pinMode(12, OUTPUT);
   ttgo = TTGOClass::getWatch();
   ttgo->begin();

@@ -3,9 +3,8 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-from flask import Flask, render_template, Response, request, abort, session, jsonify
+from flask import Flask, render_template, Response, request, jsonify
 from server.simulation_connection import Camera, CommandSender
-import time
 import json
 
 app = Flask(__name__)
