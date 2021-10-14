@@ -3,3 +3,4 @@ websockets>=9.1
 pybullet~=3.0.8
 numpy~=1.20.1
 Pillow>=8.3.2
+pyserial>=3.5
