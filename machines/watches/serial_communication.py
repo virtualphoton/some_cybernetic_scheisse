@@ -31,4 +31,4 @@ class Serial:
 
     def send_positions(self, data):
         # data is an array of positions of revolute joints in interval [0; 255]
-        self.encase_and_send(b'x03', bytearray(data))
+        self.encase_and_send(b'\x03', bytearray(data))

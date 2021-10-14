@@ -2,6 +2,7 @@ import websockets
 from websockets.exceptions import ConnectionClosedError
 import json
 
+
 async def command_communicator(commands):
     async def listener(websocket, path):
         try:
