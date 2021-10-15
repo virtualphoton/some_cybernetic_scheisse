@@ -2,28 +2,11 @@
 
 TTGOClass* ttgo;
 
-const char* watch_qr =
-"000000011101010000000"
-"011111011111010111110"
-"010001010101110100010"
-"010001011111010100010"
-"010001011010010100010"
-"011111011000110111110"
-"000000010101010000000"
-"111111110101111111111"
-"000100000101000111011"
-"110100100010100000110"
-"010001011100110001010"
-"000001110110001101101"
-"110110010000110100010"
-"111111110001110001010"
-"000000010111011000110"
-"011111010101110011101"
-"010001010101010000111"
-"010001011010101101101"
-"010001010100100000110"
-"011111010100001111101"
-"000000010000100101100";
+const char* watch_aruco =
+"0000"
+"1111"
+"1001"
+"1010";
 void sleep_(double n) {
     delay(int(n * 1000));
 }
@@ -58,36 +41,37 @@ public:
     float joints_speeds[6] = { 2.9,2.4,2.6,2.1,2.5,3 }; // how much radians per second
     float joints_states[6] = { 0,0,0,0,0,0 };
     float constraints[6][2] = { {-3.15, 3.15}, {-3.15, 3.15}, {-2.82, 2.82}, {-3.15, 3.15},  {-3.15, 3.15},  {-3.15, 3.15} };
-    const char* qr = watch_qr;
+    const char* aruco = watch_aruco;
     State() {}
     void operator=(const State& _) {}
 
     void act() {
         int t;
         SerialResult ser;
-        show_qr();
+        show_aruco();
         while (true) {
             ser.wait_for_transmission();
             if (ser.code == 2)
-                show_qr();
+                show_aruco();
             else if (ser.code == 1 or ser.code == 3)
                 show_data(ser.body, ser.code);
         }
     }
-    void show_qr() {
-      ttgo->tft->fillRect(0, 0, 240, 240, TFT_WHITE);
+    void show_aruco() {
+      int aruco_size = 4;
+      ttgo->tft->fillRect(0, 0, 240, 240, TFT_BLACK);
       int ind = 0;
-      int x = 15, y = 15;
-      int dx = 10, dy = 10;
+      int x = 40, y = 40;
+      int dx = 40, dy = 40;
       unsigned int color;
-      for (int i = 0; i < 21; i += 1) {
-          for (int j = 0; j < 21; j += 1) {
-              color = qr[ind] == '0' ? TFT_BLACK : TFT_WHITE;
+      for (int i = 0; i < aruco_size; i += 1) {
+          for (int j = 0; j < aruco_size; j += 1) {
+              color = aruco[ind] == '0' ? TFT_BLACK : TFT_WHITE;
               ttgo->tft->fillRect(x, y, dx, dy, color);
               x += dx;
               ind += 1;
           }
-          x = 15;
+          x = 40;
           y += dy;
       }
     }
