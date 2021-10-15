@@ -17,9 +17,12 @@ class Camera:
         self.thickness = 3
         self.margin = 20  # px
 
-        self.aruco_data = None
+        self.aruco_data = SimpleNamespace(**{'ind': 0, 'boxes': None, 'ids': [], 'saved_ids': [], 'saved_ids_ind': 0})
 
     def get_frame(self):
+        """
+        :return: numpy.ndarray representing image(because it's opencv)
+        """
         return self.capture.read()
 
     def get_gen(self):
@@ -46,22 +49,34 @@ class Camera:
         :param draw_bound: whether to draw bound around aruco codes on self.last_frame. Default True
         :return: list of ids of markers
         """
-        if self.aruco_data is None:
-            self.aruco_data = SimpleNamespace(**{'ind': 0, 'boxes': None, 'ids': []})
         data = self.aruco_data
-        if data.ind == 0:
-            data.boxes, data.ids = self.detect_aruco()
+        if not data.ind:
+            data.boxes, ids = self.detect_aruco()
+            data.ids = [id_[0] for id_ in ids] if ids is not None else []
         data.ind = (data.ind + 1) % freq
         if draw_bound and data.boxes is not None:
             self.last_frame = aruco.drawDetectedMarkers(self.last_frame, data.boxes)
-        return [l[0] for l in data.ids] if data.ids is not None else []
+        return data.ids
 
     def add_ids(self, trail=3):
         """
         :param trail: last unique sets of ids to take into account
         """
-        if self.aruco_data.ind == 0:  # update with same frequency as aruko
-            pass
+        data = self.aruco_data
+        if data.ind == 0:  # update with same frequency as aruco
+            if not len(data.saved_ids):
+                data.saved_ids = [set()] * trail
+            data.saved_ids[data.saved_ids_ind % trail] = set(data.ids)
+            data.saved_ids_ind += 1
+
+    def get_ids(self):
+        """
+        :return: set of markers' ids on frame
+        """
+        ids = set()
+        for id_ in self.aruco_data.saved_ids:
+            ids |= id_
+        return ids
 
     def livestream(self):
         while True:
@@ -70,11 +85,12 @@ class Camera:
                 self.write_on_frame('No connection')
             else:
                 self.last_frame = frame
-            self.aruco_with_freq(freq=5, draw_bound=True)
+            self.aruco_with_freq(draw_bound=True)
             self.add_ids()
             cv2.imshow('livestream', self.last_frame)
             if cv2.waitKey(1) == ord('q'):
                 break
+            print(self.get_ids())
         self.capture.release()
         cv2.destroyAllWindows()
 
