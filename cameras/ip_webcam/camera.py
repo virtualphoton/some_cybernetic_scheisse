@@ -1,6 +1,8 @@
 import cv2
 import cv2.aruco as aruco
 from types import SimpleNamespace
+from time import sleep
+import threading
 
 
 class Camera:
@@ -9,6 +11,8 @@ class Camera:
         self.url = 'http://192.168.0.2:8080'
         self.capture = cv2.VideoCapture(f'{self.url}/video')
         self.last_frame = None
+        self.last_frame_id = 0
+        self.dt = 0.01
 
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.font_size = 5
@@ -18,6 +22,7 @@ class Camera:
         self.margin = 20  # px
 
         self.aruco_data = SimpleNamespace(**{'ind': 0, 'boxes': None, 'ids': [], 'saved_ids': [], 'saved_ids_ind': 0})
+        self.frame_getter_thread()
 
     def get_frame(self):
         """
@@ -25,12 +30,48 @@ class Camera:
         """
         return self.capture.read()
 
-    def get_gen(self):
-        pass
+    def frame_getter_thread(self):
+        """
+        method that starts a thread that gets images
+        :return:
+        """
+
+        def thread_func(self: Camera):
+
+            while True:
+                ret, frame = self.get_frame()
+                if not ret:
+                    self.write_on_frame('No connection')
+                    self.last_frame_id = -1
+                    break
+                else:
+                    self.last_frame = frame
+                    self.last_frame_id += 1
+                self.aruco_with_freq(draw_bound=True)
+                self._add_ids()
+
+        thread = threading.Thread(target=thread_func, args=(self,))
+        thread.start()
+
+    def gen(self):
+        """
+        generator for streaming
+        :return: image as a string of bytes
+        """
+        sent_id = 0
+        stop_flag = None
+        while stop_flag is None:
+            while sent_id == self.last_frame_id:
+                sleep(self.dt)
+                if self.last_frame_id == -1:
+                    break
+            sent_id = self.last_frame_id
+            _, buf_arr = cv2.imencode('.jpg', self.last_frame)
+            stop_flag = yield buf_arr.tobytes()
 
     def detect_aruco(self, size=4, total_markers=250):
         """
-        detect
+        detect aruco on image
         :param size: size of nxn marker(default and minimum are 4)
         :param total_markers: maximum id of marker(not included). Default 250, i.e. 0 <= id <= 249
         :return: found boxes and ids of markers
@@ -58,7 +99,7 @@ class Camera:
             self.last_frame = aruco.drawDetectedMarkers(self.last_frame, data.boxes)
         return data.ids
 
-    def add_ids(self, trail=3):
+    def _add_ids(self, trail=3):
         """
         :param trail: last unique sets of ids to take into account
         """
@@ -78,22 +119,6 @@ class Camera:
             ids |= id_
         return ids
 
-    def livestream(self):
-        while True:
-            ret, frame = self.get_frame()
-            if not ret:
-                self.write_on_frame('No connection')
-            else:
-                self.last_frame = frame
-            self.aruco_with_freq(draw_bound=True)
-            self.add_ids()
-            cv2.imshow('livestream', self.last_frame)
-            if cv2.waitKey(1) == ord('q'):
-                break
-            print(self.get_ids())
-        self.capture.release()
-        cv2.destroyAllWindows()
-
     def write_on_frame(self, msg):
         """
         write text in the middle of the screen
@@ -109,4 +134,14 @@ class Camera:
 
 
 if __name__ == '__main__':
-    Camera().livestream()
+    cam = Camera()
+    cam.frame_getter_thread()
+    id_ = 0
+    while True:
+        if id_ != cam.last_frame_id:
+            cv2.imshow('livestream', cam.last_frame)
+            if cv2.waitKey(1) == ord('q'):
+                break
+            id_ += 1
+    cam.capture.release()
+    cv2.destroyAllWindows()

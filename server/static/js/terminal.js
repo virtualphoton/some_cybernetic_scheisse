@@ -28,6 +28,27 @@ $('body').terminal({
             this.echo('Params must be numbers!')
     },
 
+    change_res: function(x, y) {
+        if (typeof(x) == 'number' && x > 0 && typeof(y) == 'number' && y > 0) {
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ command:'change_res', args:[[x, y]]})
+            }
+            let address = window.location.href + 'send_command';
+            fetch(address, requestOptions).then( async response => {
+                // check for error response
+                if (!response.ok) {
+                    // get error message from body or default to response status
+                    const error = response.status;
+                    return Promise.reject(error);
+                }
+                //this.echo(response.json().msg)
+            }).catch(error => { this.echo(error); })
+        } else
+            this.echo('Params must be numbers!')
+    },
+
     set_cam_height: function(h) {
         if (typeof(h) == 'number' && h > 3) {
             const requestOptions = {

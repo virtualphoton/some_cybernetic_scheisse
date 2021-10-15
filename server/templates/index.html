@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css"/>
   </head>
   <body>
-    <img src="{{ url_for('video_feed') }}">
+    <img src="{{ url_for('video_feed') }}" width="{{width}}" height="{{height}}">
     <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
   </body>
 </html>
