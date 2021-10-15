@@ -11,6 +11,17 @@ void sleep_(double n) {
     delay(int(n * 1000));
 }
 
+void change_brightness_by_touch(void *args){
+    float b;
+    int16_t x, y;
+    while (true){
+      if (ttgo->getTouch(x, y)) {
+          b = x/240.*256 + y/240.*16;
+          ttgo->setBrightness(int(b));
+      }
+    }
+}
+
 class SerialResult {
 public:
     byte BUF_SIZE = 64;
@@ -59,10 +70,11 @@ public:
     }
     void show_aruco() {
       int aruco_size = 4;
-      ttgo->tft->fillRect(0, 0, 240, 240, TFT_BLACK);
+      ttgo->tft->fillRect(0, 0, 240, 240, TFT_WHITE);
+      ttgo->tft->fillRect(30, 30, 180, 180, TFT_BLACK);
       int ind = 0;
-      int x = 40, y = 40;
-      int dx = 40, dy = 40;
+      int x = 60, y = 60;
+      int dx = 30, dy = 30;
       unsigned int color;
       for (int i = 0; i < aruco_size; i += 1) {
           for (int j = 0; j < aruco_size; j += 1) {
@@ -71,7 +83,7 @@ public:
               x += dx;
               ind += 1;
           }
-          x = 40;
+          x = 60;
           y += dy;
       }
     }
@@ -123,7 +135,8 @@ void setup() {
     ttgo = TTGOClass::getWatch();
     ttgo->begin();
     ttgo->openBL();
-    ttgo->setBrightness(50);
+    ttgo->setBrightness(25);
+    //xTaskCreate(change_brightness_by_touch, "touch", 2048, NULL, 2, NULL);
 }
 
 void loop() {
