@@ -1,4 +1,3 @@
-let aruco_id = 1;
 let commands_url = create_url('send_command')
 
 $terminal_attached.terminal().push({
@@ -9,7 +8,7 @@ $terminal_attached.terminal().push({
                 method: 'POST', contentType: 'application/json; charset=utf-8', dataType: 'json',
                 data: JSON.stringify({
                     command: 'move_to',
-                    args: [rpy.length ? [xyz, rpy] : [xyz]],
+                    args: rpy.length ? [xyz, rpy] : [xyz],
                     id: 1
                 })
             })
@@ -22,8 +21,8 @@ $terminal_attached.terminal().push({
         }
     },
     {
-        name: `${aruco_id}`,
-        prompt: `${aruco_id}> `,
+        name: '1',
+        prompt: '1> ',
         greetings: 'type `help` to find out commands',
         completion: true,
         checkArity: false

@@ -17,6 +17,7 @@ class Serial:
             \x01 - start communication(and turn off QR code)
             \x02 - end communication
             \x03 - pass data
+            \x04 - the very first wake up
         """
 
         start = b'<'

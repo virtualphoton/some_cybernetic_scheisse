@@ -66,7 +66,7 @@ def toggle_state():
         CommandSender(port).send_command({'command': 'disconnect'})
         connected_ids.remove(id_)
         machines[id_]['connected'] = 0
-        return jsonify({'type': 'has_connected'})
+        return jsonify({'type': 'has_disconnected'})
 
 
 @app.route('/video_feed')
@@ -77,14 +77,14 @@ def video_feed():
 
 @app.route('/send_command', methods=['POST'])
 def send_command():
-    flask_commands = {'change_height': lambda *args, **kwargs: {'msg': 'Hello'}}
+    flask_commands = {}
     req_data = request.json
     if req_data['command'] in flask_commands:
         ret_json = flask_commands[req_data['command']](*req_data.get('args', []), **req_data.get('kwargs', {}))
     else:
         jsoned = json.dumps(req_data)
         port = machines[req_data['id']]['port']
-        ret_json = CommandSender(port).send_command(jsoned)
+        ret_json = json.loads(CommandSender(port).send_command(jsoned))
     return jsonify(ret_json)
 
 

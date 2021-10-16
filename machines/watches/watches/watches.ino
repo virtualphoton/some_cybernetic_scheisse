@@ -59,6 +59,7 @@ public:
     void act() {
         int t;
         SerialResult ser;
+        ser.wait_for_transmission();
         show_aruco();
         while (true) {
             ser.wait_for_transmission();

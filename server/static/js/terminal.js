@@ -1,26 +1,18 @@
 // not dry
 $terminal_attached = $('#terminal');
 
-function print_msg_from_resp(terminal, response) {
-    response.json().then(function (resp) {
-        terminal.echo(resp.msg)
-    })
-}
-
 function create_url(end) {
     return window.location.href + end
 }
 
 
 $(function () {
-    console.log(1)
     let get_machines_url = create_url('get_machines')
     setInterval(function () {
         $.ajax(get_machines_url, {
             timeout: 500,
             success: function (data) {
                 data.sort((fst, snd) => (snd.connected - fst.connected || snd.aruco_id - fst.aruco_id))
-                console.log(data)
                 $('#list li').remove()
                 data.forEach(function (row) {
                     let inner_html = `<p>${row.aruco_id}: ${row.name}</p>`
@@ -32,7 +24,7 @@ $(function () {
                 })
             }
         })
-    }, 1000)
+    }, 2000)
 
     let toggle_state_url = create_url('toggle_state')
     $('#list').on('click', function (event) {
@@ -47,6 +39,7 @@ $(function () {
                     if (data.type === 'has_connected') {
                         $.getScript(create_url(data.commands_url))
                     } else if (data.type === 'has_disconnected') {
+                        console.log(123)
                         $terminal_attached.terminal().pop()
                     }
                 }
@@ -56,6 +49,9 @@ $(function () {
 
 
 $terminal_attached.terminal({
+    add: function (...args) {
+        this.echo(args.reduce((a, b) => a + b));
+    },
     cat: function () {
         const img = $('<img src="https://placekitten.com/400/400">');
         img.on('load', this.resume);
