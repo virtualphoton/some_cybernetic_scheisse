@@ -1,6 +1,7 @@
 import websockets
 import asyncio
 from websockets.exceptions import ConnectionClosedError
+import json
 
 
 def no_connection_handler(func):
@@ -29,8 +30,8 @@ class Camera:
 
 
 class CommandSender:
-    def __init__(self):
-        self.uri = "ws://localhost:8766"
+    def __init__(self, port=8766):
+        self.uri = f"ws://localhost:{port}"
 
     @no_connection_handler
     async def _send_command(self, jsoned):
@@ -39,4 +40,6 @@ class CommandSender:
             return await websocket.recv()
 
     def send_command(self, jsoned):
+        if not isinstance(jsoned, str):
+            jsoned = json.dumps(jsoned)
         return asyncio.run(self._send_command(jsoned))

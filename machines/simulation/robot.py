@@ -1,6 +1,6 @@
 import pybullet as pb
 import numpy as np
-from simulation.useful_funcs import normalize
+from machines.simulation.useful_funcs import normalize
 import asyncio
 
 

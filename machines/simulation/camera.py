@@ -46,7 +46,9 @@ class Camera:
         returns frames as bytes string
         """
         rgba_img = self.get_frame()
+        rgba_bytes = bytes(rgba_img)
         # some magic to get bytestring
         output = io.BytesIO()
-        im.fromarray(rgba_img).convert('RGB').save(output, format='JPEG', quality=Camera.QUALITY)
+        im.frombytes('RGBA', (Camera.default_size['width'], Camera.default_size['width']), rgba_bytes)\
+            .convert('RGB').save(output, format='JPEG', quality=Camera.QUALITY)
         return output.getvalue()

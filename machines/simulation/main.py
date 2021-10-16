@@ -1,24 +1,23 @@
 import os.path
 import sys
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-
 import pybullet as pb
 import pybullet_data as pb_data
 
 import asyncio
 
-from simulation.camera import Camera
-from simulation.robot import Robot
-from simulation.server import image_sender_server, command_communicator
+from machines.simulation.camera import Camera
+from machines.simulation.robot import Robot
+from machines.simulation.server import image_sender_server, command_communicator
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 physicsClient = pb.connect(pb.DIRECT)
 
 
 def reset_and_start_sim():
-    pb.resetSimulation()
     pb.setAdditionalSearchPath(pb_data.getDataPath())
-    plane = pb.loadURDF("plane.urdf")
+    # plane = pb.loadURDF("plane.urdf")
     robot = Robot()
     pb.setTimeStep(0.01)  # no idea what this does
     pb.setRealTimeSimulation(0)  # to iterate normally
