@@ -8,6 +8,7 @@ async def command_communicator(commands):
         try:
             jsoned = await websocket.recv()
             data = json.loads(jsoned.decode())
+            print(data)
             msg = commands[data['command']](*data.get('args', []), **data.get('kwargs', {}))
             msg = '' if msg is None else msg
             await websocket.send(json.dumps({'msg': msg}).encode())

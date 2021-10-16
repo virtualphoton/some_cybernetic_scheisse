@@ -4,9 +4,19 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://unpkg.com/jquery.terminal/js/jquery.terminal.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/jquery.terminal/css/jquery.terminal.min.css"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
   </head>
   <body>
-    <img src="{{ url_for('video_feed') }}" width="{{width}}" height="{{height}}">
+    <div class="stream_block">
+      <img class="stream" id="stream" src="{{ url_for('video_feed') }}" width="{{width}}" height="{{height}}">
+      <ul class="list" id="list">
+        <li>1</li>
+        <li>2</li>
+        <li>3</li>
+        <li>4</li>
+      </ul>
+    </div>
+    <div id="terminal"></div>
     <script src="{{ url_for('static', filename='js/terminal.js') }}"></script>
   </body>
 </html>

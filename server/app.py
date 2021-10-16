@@ -9,15 +9,13 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__)
 
-Camera_Class = IP_webcam
+cam = IP_webcam()
 command_sender_port = 8766
-resolution = (1920 // 2, 1080 // 2)
 
 
 @app.route('/')
 def index():
-    print(resolution)
-    return render_template('index.html', width=resolution[0], height=resolution[1])
+    return render_template('index.html', width=1920 // 2, height=1080 // 2)
 
 
 def gen_wrapper(camera_generator):
@@ -33,23 +31,26 @@ def gen_wrapper(camera_generator):
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_wrapper(Camera_Class().gen()),
+    return Response(gen_wrapper(cam.gen()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-def change_resolution(new_res):
-    global resolution
-    resolution = new_res
+
+@app.route('/get_machines', methods=['GET'])
+def get_machines():
+    return jsonify(list(map(int, cam.get_ids())))
 
 
 @app.route('/send_command', methods=['POST'])
 def send_command():
-    flask_commands = {'change_res': change_resolution}
+    flask_commands = {'change_height': lambda *args, **kwargs: {'msg': 'Hello'}}
     req_data = request.json
     if req_data['command'] in flask_commands:
-        flask_commands[req_data['command']](*req_data.get('args', []), **req_data.get('kwargs', {}))
-    jsoned = json.dumps(req_data).encode()
-    return jsonify(CommandSender(8766).send_command(jsoned).decode())
+        ret_json = flask_commands[req_data['command']](*req_data.get('args', []), **req_data.get('kwargs', {}))
+    else:
+        jsoned = json.dumps(req_data).encode()
+        ret_json = CommandSender(8766).send_command(jsoned).decode()
+    return jsonify(ret_json)
 
 
 if __name__ == '__main__':

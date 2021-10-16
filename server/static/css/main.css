@@ -1,0 +1,10 @@
+.stream_block {
+    display: flex;
+    justify-content: flex-start;
+}
+.list {
+    margin-left: 20px;
+}
+#terminal {
+    min-height: 500px;
+}
