@@ -1,22 +1,59 @@
 // not dry
-let $terminal_attached = $('#terminal');
+$terminal_attached = $('#terminal');
 
-function print_msg_from_resp(terminal, response){
-    response.json().then(function (resp){ terminal.echo(resp.msg) })
+function print_msg_from_resp(terminal, response) {
+    response.json().then(function (resp) {
+        terminal.echo(resp.msg)
+    })
 }
 
-$(function(){
+function create_url(end) {
+    return window.location.href + end
+}
+
+
+$(function () {
     console.log(1)
-    let get_machines_url = window.location.href + 'get_machines'
-    setInterval( function(){
+    let get_machines_url = create_url('get_machines')
+    setInterval(function () {
         $.ajax(get_machines_url, {
             timeout: 500,
-            success: function (data){
+            success: function (data) {
+                data.sort((fst, snd) => (snd.connected - fst.connected || snd.aruco_id - fst.aruco_id))
                 console.log(data)
+                $('#list li').remove()
+                data.forEach(function (row) {
+                    let inner_html = `<p>${row.aruco_id}: ${row.name}</p>`
+                    if (row.connected)
+                        inner_html += `<button id="b_off_${row.aruco_id}" class="button disconnect">Disonnect</button>`
+                    else
+                        inner_html += `<button id="b_on_${row.aruco_id}" class="button connect">Connect</button>`
+                    $('#list').append(`<li id="m_${row.aruco_id}">${inner_html}</li>`)
+                })
             }
         })
     }, 1000)
+
+    let toggle_state_url = create_url('toggle_state')
+    $('#list').on('click', function (event) {
+        let id = event.target.id
+        if (id.startsWith('b_'))
+            $.ajax(toggle_state_url, {
+                data: JSON.stringify({button_id: id}),
+                method: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success: data => {
+                    if (data.type === 'has_connected') {
+                        $.getScript(create_url(data.commands_url))
+                    } else if (data.type === 'has_disconnected') {
+                        $terminal_attached.terminal().pop()
+                    }
+                }
+            })
+    })
 })
+
 
 $terminal_attached.terminal({
     cat: function () {
@@ -24,28 +61,6 @@ $terminal_attached.terminal({
         img.on('load', this.resume);
         this.pause();
         this.echo(img);
-    },
-    move_to: function (x, y) {
-        if (typeof (x) == 'number' && typeof (y) == 'number') {
-            const requestOptions = {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({command: 'move_to', args: [x, y]})
-            }
-            let address = window.location.href + 'send_command';
-            fetch(address, requestOptions).then(async response => {
-                // check for error response
-                if (!response.ok) {
-                    // get error message from body or default to response status
-                    const error = response.status;
-                    return Promise.reject(error);
-                }
-                //this.echo(response.json().msg)
-            }).catch(error => {
-                this.echo(error);
-            })
-        } else
-            this.echo('Params must be numbers!')
     },
 
     change_res: function (x, y) {
@@ -79,48 +94,9 @@ $terminal_attached.terminal({
         }).catch(error => {
             this.echo(error);
         })
-    },
-
-    set_cam_height: function (h) {
-        if (typeof (h) == 'number' && h > 3) {
-            const requestOptions = {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({command: 'change_height', args: [h]})
-            }
-            let address = window.location.href + 'send_command';
-            fetch(address, requestOptions).then(async response => {
-                if (!response.ok) {
-                    const error = response.status;
-                    return Promise.reject(error);
-                }
-                print_msg_from_resp(this, response)
-
-            }).catch(error => {
-                this.echo(error);
-            })
-        } else
-            this.echo('Height must be a number higher than 3!')
-    },
-    help: function () {
-        this.echo('you can use Tab for autocomplete\n' + 'Ctrl+F5 for static files to reload\n\n' +
-            'move_to <x> <y>\n' + 'set_cam_height <h>\n' + 'cat',
-        );
-    },
-    hell: function () {
-        console.log('Hello, world!')
     }
 }, {
+    checkArity: false,
     greetings: '`help` is actually a valid command',
     completion: true
-});
-$terminal_attached.terminal.push({
-    hello: function () {
-        console.log('Hello, world!')
-    },
-    help: function () {
-        this.echo('you can use Tab for autocomplete\n' + 'Ctrl+F5 for static files to reload\n\n' +
-            'move_to <x> <y>\n' + 'set_cam_height <h>\n' + 'cat',
-        );
-    },
 });

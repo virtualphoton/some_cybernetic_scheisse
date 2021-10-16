@@ -1,6 +1,7 @@
 import websockets
 import asyncio
 from websockets.exceptions import ConnectionClosedError
+import json
 
 
 def no_connection_handler(func):
@@ -39,4 +40,6 @@ class CommandSender:
             return await websocket.recv()
 
     def send_command(self, jsoned):
+        if not isinstance(jsoned, str):
+            jsoned = json.dumps(jsoned)
         return asyncio.run(self._send_command(jsoned))

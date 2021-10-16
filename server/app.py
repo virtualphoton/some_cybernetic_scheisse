@@ -12,6 +12,21 @@ app = Flask(__name__)
 cam = IP_webcam()
 command_sender_port = 8766
 
+connected_ids = set()
+machines = {
+    1: {
+        'aruco_id': 1,
+        'name': 'I identify myself as a 6R robot',
+        'js_path': '/static/js/01_commands.js',
+        'port': 8786,
+        'connected': 0
+    }
+}
+
+
+def get_machines_fields(ids, fields):
+    return [{field: machines[id_][field] for field in fields} for id_ in ids if id_ in machines]
+
 
 @app.route('/')
 def index():
@@ -29,16 +44,35 @@ def gen_wrapper(camera_generator):
                          b'Content-Type: image/jpeg\r\n\r\n', next(camera_generator), b'\r\n')))
 
 
+@app.route('/get_machines', methods=['GET'])
+def get_machines():
+    ids = set(map(int, cam.get_ids())) | connected_ids
+    data = get_machines_fields(ids, ('aruco_id', 'name', 'connected'))
+    return jsonify(data)
+
+
+@app.route('/toggle_state', methods=['POST'])
+def toggle_state():
+    data = request.json['button_id']
+    _, new_state, id_ = data.split('_')
+    id_ = int(id_)
+    port = machines[id_]['port']
+    if new_state == 'on':
+        CommandSender(port).send_command({'command': 'connect'})
+        connected_ids.add(id_)
+        machines[id_]['connected'] = 1
+        return jsonify({'type': 'has_connected', 'commands_url': machines[id_]['js_path']})
+    elif new_state == 'off':
+        CommandSender(port).send_command({'command': 'disconnect'})
+        connected_ids.remove(id_)
+        machines[id_]['connected'] = 0
+        return jsonify({'type': 'has_connected'})
+
+
 @app.route('/video_feed')
 def video_feed():
     return Response(gen_wrapper(cam.gen()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
-
-
-
-@app.route('/get_machines', methods=['GET'])
-def get_machines():
-    return jsonify(list(map(int, cam.get_ids())))
 
 
 @app.route('/send_command', methods=['POST'])
@@ -48,8 +82,9 @@ def send_command():
     if req_data['command'] in flask_commands:
         ret_json = flask_commands[req_data['command']](*req_data.get('args', []), **req_data.get('kwargs', {}))
     else:
-        jsoned = json.dumps(req_data).encode()
-        ret_json = CommandSender(8766).send_command(jsoned).decode()
+        jsoned = json.dumps(req_data)
+        port = machines[req_data['id']]['port']
+        ret_json = CommandSender(port).send_command(jsoned)
     return jsonify(ret_json)
 
 

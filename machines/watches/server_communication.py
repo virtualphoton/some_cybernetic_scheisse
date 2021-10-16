@@ -7,7 +7,7 @@ async def command_communicator(commands):
     async def listener(websocket, path):
         try:
             jsoned = await websocket.recv()
-            data = json.loads(jsoned.decode())
+            data = json.loads(jsoned)
             print(data)
             msg = commands[data['command']](*data.get('args', []), **data.get('kwargs', {}))
             msg = '' if msg is None else msg
@@ -16,4 +16,4 @@ async def command_communicator(commands):
             # has a chance to prevent this from falling
             pass
 
-    await websockets.serve(listener, "localhost", 8766)
+    await websockets.serve(listener, "localhost", 8786)

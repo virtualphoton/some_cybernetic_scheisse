@@ -110,7 +110,7 @@ class Camera(metaclass=Singleton):
             self.last_frame = aruco.drawDetectedMarkers(self.last_frame, data.boxes)
         return data.ids
 
-    def _add_ids(self, trail=3):
+    def _add_ids(self, trail=10):
         """
         :param trail: last unique sets of ids to take into account
         """
