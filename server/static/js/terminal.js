@@ -39,7 +39,6 @@ $(function () {
                     if (data.type === 'has_connected') {
                         $.getScript(create_url(data.commands_url))
                     } else if (data.type === 'has_disconnected') {
-                        console.log(123)
                         $terminal_attached.terminal().pop()
                     }
                 }
@@ -49,9 +48,6 @@ $(function () {
 
 
 $terminal_attached.terminal({
-    add: function (...args) {
-        this.echo(args.reduce((a, b) => a + b));
-    },
     cat: function () {
         const img = $('<img src="https://placekitten.com/400/400">');
         img.on('load', this.resume);

@@ -17,9 +17,9 @@ class Singleton(type):
 class Camera(metaclass=Singleton):
     camera_instance = None
 
-    def __init__(self):
-
-        self.url = 'http://192.168.0.2:8080'
+    def __init__(self, url='http://192.168.0.2:8080'):
+        assert url.startswith('http')
+        self.url = url
         self.capture = cv2.VideoCapture(f'{self.url}/video')
         self.last_frame = None
         self.last_frame_id = 0

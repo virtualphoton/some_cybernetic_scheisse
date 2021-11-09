@@ -9,7 +9,7 @@ import json
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__)
 
-cam = IP_webcam()
+cam = IP_webcam('http://192.168.43.1:8080')
 command_sender_port = 8766
 
 connected_ids = set()
@@ -19,6 +19,13 @@ machines = {
         'name': 'I identify myself as a 6R robot',
         'js_path': '/static/js/01_commands.js',
         'port': 8786,
+        'connected': 0
+    },
+    2: {
+        'aruco_id': 2,
+        'name': 'dobot magician',
+        'js_path': 'static/js/02_dobot_1.js',
+        'port': 8796,
         'connected': 0
     }
 }
@@ -47,6 +54,8 @@ def gen_wrapper(camera_generator):
 @app.route('/get_machines', methods=['GET'])
 def get_machines():
     ids = set(map(int, cam.get_ids())) | connected_ids
+    # TODO clear
+    ids |= {2}
     data = get_machines_fields(ids, ('aruco_id', 'name', 'connected'))
     return jsonify(data)
 
