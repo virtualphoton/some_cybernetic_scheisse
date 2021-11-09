@@ -17,7 +17,7 @@ $(function () {
                 data.forEach(function (row) {
                     let inner_html = `<p>${row.aruco_id}: ${row.name}</p>`
                     if (row.connected)
-                        inner_html += `<button id="b_off_${row.aruco_id}" class="button disconnect">Disonnect</button>`
+                        inner_html += `<button id="b_off_${row.aruco_id}" class="button disconnect">Disconnect</button>`
                     else
                         inner_html += `<button id="b_on_${row.aruco_id}" class="button connect">Connect</button>`
                     $('#list').append(`<li id="m_${row.aruco_id}">${inner_html}</li>`)

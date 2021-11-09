@@ -2,15 +2,12 @@ import os.path
 import sys
 
 from flask import Flask, render_template, Response, request, jsonify
-from cameras.ip_webcam.camera import Camera as IP_webcam
+from cameras.webcam.camera import Camera as Webcam
 from simulation_connection import CommandSender
 import json
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__)
-
-cam = IP_webcam('http://192.168.43.1:8080')
-command_sender_port = 8766
 
 connected_ids = set()
 machines = {
@@ -53,7 +50,7 @@ def gen_wrapper(camera_generator):
 
 @app.route('/get_machines', methods=['GET'])
 def get_machines():
-    ids = set(map(int, cam.get_ids())) | connected_ids
+    ids = set(map(int, Webcam('usb_cam', cam_id=1).get_ids())) | connected_ids
     # TODO clear
     ids |= {2}
     data = get_machines_fields(ids, ('aruco_id', 'name', 'connected'))
@@ -80,7 +77,7 @@ def toggle_state():
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_wrapper(cam.gen()),
+    return Response(gen_wrapper(Webcam('usb_cam', cam_id=1).gen()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -99,3 +96,4 @@ def send_command():
 
 if __name__ == '__main__':
     app.run(host='localhost', debug=True)
+

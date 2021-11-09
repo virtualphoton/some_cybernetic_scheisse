@@ -3,24 +3,56 @@ import cv2.aruco as aruco
 from types import SimpleNamespace
 from time import sleep
 import threading
+import atexit
 
 
 class Singleton(type):
     _instances = {}
-
     def __call__(cls, *args, **kwargs):
-        if cls not in cls._instances:
-            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
-        return cls._instances[cls]
+        print(Singleton._instances)
+        if cls not in Singleton._instances:
+            Singleton._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return Singleton._instances[cls]
+
+
+class WrongCameraTypeProvidedException(Exception):
+    pass
+
+
+class CouldNotConnectToCameraException(Exception):
+    pass
 
 
 class Camera(metaclass=Singleton):
     camera_instance = None
 
-    def __init__(self, url='http://192.168.0.2:8080'):
-        assert url.startswith('http')
-        self.url = url
-        self.capture = cv2.VideoCapture(f'{self.url}/video')
+    def __init__(self, cam_type, **kwargs):
+        """
+        :param cam_type: type of camera to use - 'url' or 'usb_cam'
+        :param kwargs:
+            if type is 'url', then
+                :key url: url for video stream, url starts with either 'http' or 'https'
+            if 'usb_cam', then:
+                :key cam_id: - external cam id, default is 1
+                :key api:    - opencv api, to connect to cam (because some work much better than other)
+                :key res:    - resolution as tuple, default is (1280, 720)
+            :key con_timeout: connection timeout in seconds, -1 to infinite
+        """
+        if cam_type == 'url':
+            url = kwargs.get('url', 'http://192.168.0.2:8080')
+            assert url.startswith('http')
+            self.capture = cv2.VideoCapture(f'{url}/video')
+        elif cam_type == 'usb_cam':
+            cam_id = kwargs.get('cam_id', 1)
+            api = kwargs.get('api', cv2.CAP_DSHOW)
+            res = kwargs.get('res', (1280, 720))
+            self.capture = cv2.VideoCapture(cam_id, api)
+            self.check_connection(**kwargs)
+            self.capture.set(3, res[0])
+            self.capture.set(4, res[1])
+        else:
+            raise WrongCameraTypeProvidedException
+        atexit.register(self.cleanup)
         self.last_frame = None
         self.last_frame_id = 0
         self.dt = 0.01
@@ -34,6 +66,23 @@ class Camera(metaclass=Singleton):
 
         self.aruco_data = SimpleNamespace(**{'ind': 0, 'boxes': None, 'ids': [], 'saved_ids': [], 'saved_ids_ind': 0})
         self.frame_getter_thread()
+
+    def check_connection(self, **kwargs):
+        connection_timeout = int(kwargs.get('con_timeout', 60) * 10)
+        if connection_timeout < 0:
+            connection_timeout = 10 ** 9
+        for t in range(connection_timeout):
+            sleep(.1)
+            print(t)
+            if self.capture.isOpened():
+                break
+        else:
+            raise CouldNotConnectToCameraException
+        print(f'Connected in {t / 10} seconds')
+
+    def cleanup(self):
+        print("Running cleanup...")
+        self.capture.release()
 
     def get_frame(self):
         """
@@ -145,8 +194,7 @@ class Camera(metaclass=Singleton):
 
 
 if __name__ == '__main__':
-    cam = Camera()
-    cam.frame_getter_thread()
+    cam = Camera('usb_cam', cam_id=1, con_timeout=-1)
     id_ = 0
     while True:
         if id_ != cam.last_frame_id:
