@@ -8,6 +8,7 @@ import atexit
 
 class Singleton(type):
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         print(Singleton._instances)
         if cls not in Singleton._instances:
