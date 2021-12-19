@@ -2,11 +2,10 @@ import serial
 
 
 class Serial:
-    PORT = 'COM3'
     TIMEOUT = 0
 
-    def __init__(self):
-        self.ser = serial.Serial(self.PORT, 115200, timeout=self.TIMEOUT)
+    def __init__(self, port):
+        self.ser = serial.Serial(port, 115200, timeout=self.TIMEOUT)
 
     def send(self, byte_string):
         self.ser.write(byte_string)
