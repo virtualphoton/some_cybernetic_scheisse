@@ -1,9 +1,11 @@
 # Описание
-Ресурсы всего 2 типов - камеры и устройства:
+Есть ресурсы 2 типов - камеры и устройства:
 - камеры транслируют видео
-- устройства - то, чему пользователи могут посылать команды через консоль (например, роботы)
+- устройства (Machine) - то, чему пользователи могут посылать команды через консоль (например, робот)
 
-Пользователи могут владеть некоторыми из этих ресурсов, объединять их в группы (с различными ограничениями на разрешенные команды) и давать доступ к группам другим пользователям.
+Пользователи могут обладать некоторыми из этих ресурсов (т.е. иметь право с ними взаимодействовать). Чтобы с ресурсами было удобнее работать, пользователи могут объединять их в группы (например, камера и несколько устройств), а также давать доступ к группам другим пользователям (т.е. другие пользователи получают права взаимодействия с ресурсами).
+
+Но пользователь может захотеть сделать так, чтобы в разных группах было одно и тоже устройство, но списки разрешенных команд отличалист. Для этого в группы вместо самого устройства кладется спецификация - сущность, содержащая список разрешенных команд. Спецификации создаются пользователем, обладающим устройством. 
 # Данные
 Отношения: O-t-M - one-to-many, M-t-O, M-t-M.
 
@@ -18,7 +20,7 @@ Camera:
 - `address: str, not null` - либо url, либо id (подключение через usb)
 - `res_x, res_y: int` - разрешение (если нужно)
 
-Machine:
+Machine - устройства:
 - `id, name` - аналогично
 - `url: str, not null` - url сервера, на который посылаются команды
 - `holder: M-t-O(User), not null`
@@ -27,7 +29,7 @@ Machine:
 - `js_path: str, not null` - путь к js-скрипту с командами
 - `aruco_id: int, >= 0, < 1000` - номер на аруко-маркере (упрощенная версия QR-кода)
 
-MachineSpec - ограничения на список команд для машины:
+MachineSpec - спецификации - ограничения на список команд для машины:
 - `id, name` - ...
 - `machine: M-t-O(Machine), not null` - от какой машины идет
 - `commands: M-t-M(Command)` - разрешенные команды
@@ -56,8 +58,8 @@ User:
 
 Общая целостность:
 
-- в группе все ресурсы должны имеют одного обладателя - создателя
-- в MachineSpec команды у спецификации от одной машины
+- в группе все ресурсы должны иметь одного holder-а - создателя группы
+- MachineSpec не должна содержать команд для другого устройства
 # Пользовательские роли
 Обычный пользователь:
 - владеет ресурсами и может изменять их параметры
@@ -78,38 +80,48 @@ User:
 Суть роли гостя - возможность просто получить временный доступ к ресурсам (например при переходе по ссылке от пользователя).
 # UI / API
 
-Явного API не будет, т.к. команды будут обернуты в web-приложение. В API каждая команда имеет первым скрытым параметром куки/id посылающего, по которому сервер может его определить.
+В API каждая команда имеет первым скрытым параметром куки/id посылающего, по которому сервер может его определить.
+
+Т. к. команды идут либо тройкой `add`, `list`, `delete` (м.б. еще с `modify`), параметры повторяются, а потому приводятся только для `add`. Команда типа `list` возвращает все столбцы сущностей.
 
 Для Админа:
 
-- add_resource(resource_type, resource_id, **kwargs)
-- - list_resources(resource_type)
-- - delete_resource(resource_type, resource_id)
-- - modify_resource(resource_type, resource_id, **kwargs)
-- add_command(machine_id, comand_name)
-- - list_commands(machine_id)
-- - delete_command(machine_id, comand_id)
-- give_resource(user_id, resource_type, resource_id)
-- - list_user_resources(user_id, resource_type)
-- - revoke_resource(user_id, resource_type, resource_id)
+- работа с ресурсами, `resource_type` из `{Camera, Machine}`:
+- - `add_resource(resource_type, resource_id, params...)`
+- - `list_resources(resource_type)`
+- - `delete_resource(resource_type, resource_id)`
+- - `modify_resource(resource_type, resource_id, params..)`
+- работа с доступными командами устройтсву:
+- - `add_command(machine_id, comand_name)`
+- - `list_commands(...)`
+- - `delete_command(...)`
+- подтверджение права на ресурс
+- - `give_resource(user_id, resource_type, resource_id)`
+- - `list_user_resources(...)`
+- - `revoke_resource(...)`
 
 Для владельца ресурса:
-- list_commands(machine_id)
-- create_spec(machine_id, commands), commands - состоит в get_commands
-- - specs_list(machine_id)
-- - delete_spec(spec_id)
-- add_command_to_spec(spec_id, command_id)
-- - list_spec_commands(spec_id)
-- - delete_command_from_spec(spec_id, command_id)
-- create_group(cameras, machine_specs)
-- - list_groups()
-- - delete_group(group_id)
-- add_resource_to_group(group_id, resource_type, resource_id)
-- - list_group_resources(gorup_id)
-- - delete_resource_from_group(group_id, resource_type, resource_id)
-- add_to_group(group_id, user_id)
-- - list_group_members(group_id)
-- - remove_from_group(group_id, user_id)
+- создание спецификаций:
+- - `list_commands(machine_id)`
+- - `add_spec(machine_id, commands)` (`commands` - подмножество `get_commands(...)`)
+- - `list_specs(...)`
+- - `delete_spec(...)`
+- модификация списка команд в спецификации
+- - `add_command_to_spec(spec_id, command_id)`
+- - `list_spec_commands(...)`
+- - `delete_command_from_spec(spec_id, command_id)`
+- работа с группами
+- - `create_group(cameras, machine_specs)`
+- - `list_groups()`
+- - `delete_group(...)`
+- модификация ресурсов в группе
+- - `add_resource_to_group(group_id, resource_type, resource_id)`
+- - `list_group_resources(...)`
+- - `delete_resource_from_group(...)`
+- добавление людей к группе:
+- - `add_to_group(group_id, user_id)`
+- - `list_group_members(...)`
+- - `delete_from_group(...)`
 
 
 
