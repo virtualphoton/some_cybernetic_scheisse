@@ -1,7 +1,8 @@
-flask~=1.1.2
+flask>=1.1.2
 websockets>=9.1
-pybullet~=3.0.8
-numpy~=1.20.1
+pybullet>=3.0.8
+numpy>=1.22
 Pillow>=8.3.2
 pyserial>=3.5
 opencv-python>=4.5.3
+authlib>=1.0.1

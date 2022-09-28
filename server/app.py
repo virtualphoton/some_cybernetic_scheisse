@@ -1,13 +1,21 @@
-import os.path
 import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
 from flask import Flask, render_template, Response, request, jsonify
 from cameras.webcam.camera import Camera as Webcam
-from simulation_connection import CommandSender
+from .simulation_connection import CommandSender
+from .constants import SECRET_KEY
+from .authorization import authorization
 import json
+from datetime import timedelta
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 app = Flask(__name__)
+app.secret_key = SECRET_KEY
+app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
+app.register_blueprint(authorization)
 
 connected_ids = set()
 machines = {
@@ -43,7 +51,6 @@ def gen_wrapper(camera_generator):
 
 @app.route('/get_machines', methods=['GET'])
 def get_machines():
-
     ids = set(map(int, Webcam('url', url=camera_url).get_ids())) | connected_ids
     data = get_machines_fields(ids, ('aruco_id', 'name', 'connected'))
     return jsonify(data)
@@ -69,7 +76,7 @@ def toggle_state():
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_wrapper(Webcam('usb_cam', cam_id=1).gen()),
+    return Response(gen_wrapper(Webcam('url', url=camera_url).gen()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -87,5 +94,5 @@ def send_command():
 
 
 if __name__ == '__main__':
-    camera_url = input('Type ip and port of ip webcam (e.g. 192.168.0.3:8080): ')
-    app.run(host='localhost', debug=False)
+    # camera_url = input('Type ip and port of ip webcam (e.g. 192.168.0.3:8080): ')
+    app.run(host='localhost', debug=True)
