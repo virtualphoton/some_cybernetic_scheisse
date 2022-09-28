@@ -9,8 +9,6 @@
 # Данные
 Отношения: O-t-M - one-to-many, M-t-O, M-t-M.
 
-Задаются в виде `O-t-M(table[, field])` - связь с таблицей `table`. Если связь двусторонняя, то в другой таблице связь через поле `field`.
-
 Camera:
 - `id: int, unique, not null`
 - `name: str, not null`
