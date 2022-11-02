@@ -120,7 +120,13 @@ User:
 - - `add_to_group(group_id, user_id)`
 - - `list_group_members(...)`
 - - `delete_from_group(...)`
+- поиск людей
+- - `list_usernames()`
+- - `user_id_from_username(user_id)`
 
+Для всех залогиненных пользователей:
+- `get_my_username()`
+- `leave_group(group_id)`
 
 
 # Технологии разработки
