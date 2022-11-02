@@ -100,14 +100,11 @@ User:
 - другое:
 - - `delete_user_account(user_id)`
 
-Для юзера - поиск людей:
-
-- `list_usernames()`
-- `user_id_from_username(user_id)`
-- `get_my_username()`
-
-Для юзера - менеджмент ресурсов и групп:
-
+Для юзера:
+- поиск людей:
+- - `list_usernames()`
+- - `user_id_from_username(user_id)`
+- - `get_my_username()`
 - создание спецификаций:
 - - `list_commands(machine_id)`
 - - `add_spec(machine_id, commands)` (`commands` - подмножество `get_commands(...)`)
@@ -131,7 +128,7 @@ User:
 - - `delete_from_group(...)`
 
 Для юзеров и гостей:
-
+- `list_groups_i_am_in()`
 - `leave_group(group_id)`
 - `delete_my_account()`
 
