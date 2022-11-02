@@ -97,8 +97,17 @@ User:
 - - `give_resource(user_id, resource_type, resource_id)`
 - - `list_user_resources(...)`
 - - `revoke_resource(...)`
+- другое:
+- - `delete_user_account(user_id)`
 
-Для владельца ресурса:
+Для юзера - поиск людей:
+
+- `list_usernames()`
+- `user_id_from_username(user_id)`
+- `get_my_username()`
+
+Для юзера - менеджмент ресурсов и групп:
+
 - создание спецификаций:
 - - `list_commands(machine_id)`
 - - `add_spec(machine_id, commands)` (`commands` - подмножество `get_commands(...)`)
@@ -120,13 +129,11 @@ User:
 - - `add_to_group(group_id, user_id)`
 - - `list_group_members(...)`
 - - `delete_from_group(...)`
-- поиск людей
-- - `list_usernames()`
-- - `user_id_from_username(user_id)`
 
-Для всех залогиненных пользователей:
-- `get_my_username()`
+Для юзеров и гостей:
+
 - `leave_group(group_id)`
+- `delete_my_account()`
 
 
 # Технологии разработки
