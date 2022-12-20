@@ -17,23 +17,31 @@ app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 app.register_blueprint(authorization)
 
-connected_ids = set()
 machines = {
     1: {
         'aruco_id': 1,
-        'name': 'I identify myself as a 6R robot',
+        'name': 'Some device',
+        'js_path': '/static/js/01_commands.js',
+        'port': 8786,
+        'connected': 0
+    },
+    2: {
+        'aruco_id': 2,
+        'name': 'Some device 2',
         'js_path': '/static/js/01_commands.js',
         'port': 8786,
         'connected': 0
     }
 }
 
+camera_url = 'http://192.168.0.2:8021'
+
 
 def get_machines_fields(ids, fields):
     return [{field: machines[id_][field] for field in fields} for id_ in ids if id_ in machines]
 
 
-@app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html', width=1920 // 2, height=1080 // 2)
 
@@ -51,9 +59,17 @@ def gen_wrapper(camera_generator):
 
 @app.route('/get_machines', methods=['GET'])
 def get_machines():
-    ids = set(map(int, Webcam('url', url=camera_url).get_ids())) | connected_ids
+    connected_ids = {machine['aruco_id'] for machine in machines.values() if machine['connected']}
+    ids = set(map(int, Webcam(cam_type='url', url=camera_url).get_ids())) | connected_ids
     data = get_machines_fields(ids, ('aruco_id', 'name', 'connected'))
     return jsonify(data)
+
+
+@app.route('/get_device_specs', methods=['POST'])
+def get_commands():
+    data = request.json['aruco_id']
+    result = {'commands': ['goto', 'home'], 'name': 'sth'}
+    return jsonify(result)
 
 
 @app.route('/toggle_state', methods=['POST'])
@@ -61,22 +77,23 @@ def toggle_state():
     data = request.json['button_id']
     _, new_state, id_ = data.split('_')
     id_ = int(id_)
+    if id_ == 2:
+        machines[id_]['connected'] = 1 if new_state == 'on' else 0
+        return jsonify({'type': 'has_connected', 'commands_url': machines[id_]['js_path']})
     port = machines[id_]['port']
     if new_state == 'on':
         CommandSender(port).send_command({'command': 'connect'})
-        connected_ids.add(id_)
         machines[id_]['connected'] = 1
         return jsonify({'type': 'has_connected', 'commands_url': machines[id_]['js_path']})
     elif new_state == 'off':
         CommandSender(port).send_command({'command': 'disconnect'})
-        connected_ids.remove(id_)
         machines[id_]['connected'] = 0
         return jsonify({'type': 'has_disconnected'})
 
 
 @app.route('/video_feed')
 def video_feed():
-    return Response(gen_wrapper(Webcam('url', url=camera_url).gen()),
+    return Response(gen_wrapper(Webcam(cam_type='url', url=camera_url).gen()),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
@@ -95,4 +112,4 @@ def send_command():
 
 if __name__ == '__main__':
     # camera_url = input('Type ip and port of ip webcam (e.g. 192.168.0.3:8080): ')
-    app.run(host='localhost', debug=True)
+    app.run(host='127.0.0.1', port=8801, debug=True)

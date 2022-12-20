@@ -26,7 +26,7 @@ class CouldNotConnectToCameraException(Exception):
 class Camera(metaclass=Singleton):
     camera_instance = None
 
-    def __init__(self, cam_type, **kwargs):
+    def __init__(self, cam_type, min_dt=1/15, **kwargs):
         """
         :param cam_type: type of camera to use - 'url' or 'usb_cam'
         :param kwargs:
@@ -60,7 +60,7 @@ class Camera(metaclass=Singleton):
         atexit.register(self.cleanup)
         self.last_frame = None
         self.last_frame_id = 0
-        self.dt = 0.01
+        self.dt = min_dt
 
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.font_size = 5
