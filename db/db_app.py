@@ -1,10 +1,10 @@
 import enum
 import typing as tp
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask
+from flask import Flask, request, jsonify, abort
 
 MAX_NAME_LENGTH = 40
 USER_ID_MAX_LENGTH = 50
@@ -47,7 +47,7 @@ class Machine(db.Model):
     url = db.Column(db.Text, nullable=False)
     js_path = db.Column(db.Text, nullable=False)
     aruco_id = db.Column(db.Integer,
-                         db.CheckConstrain(f'aruco_id > 0 and aruco_id < {MAX_ARUCO_ID}'))
+                         db.CheckConstraint(f'aruco_id > 0 and aruco_id < {MAX_ARUCO_ID}'))
                          
     specs = db.relationship('MachineSpec', 'machine')
     commands = db.relationship('Command', 'machine')
@@ -71,8 +71,8 @@ class Camera(db.Model):
     
     connection = db.Column(db.Enum(CameraConnection), nullable=False)
     address = db.Column(db.Text, nullable=False)
-    res_x = db.Column(db.Integer, db.CheckConstrain('res_x > 0'))
-    res_y = db.Column(db.Integer, db.CheckConstrain('res_x > 0'))
+    res_x = db.Column(db.Integer, db.CheckConstraint('res_x > 0'))
+    res_y = db.Column(db.Integer, db.CheckConstraint('res_x > 0'))
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -130,7 +130,6 @@ def pass_resource(func):
         return func(**kwargs, table=table)
     return inner
 
-
 def find_by_id(table, id):
     try:
         iter(id)
@@ -141,7 +140,6 @@ def find_by_id(table, id):
         return query.first()
     else:
         return table.query.filter(table.id.in_(id))
-
 
 def list_command_fabric(user_role, table, list_field: str | None = None, return_all=False):
     @test_role(user_role, pass_id=True)
@@ -154,7 +152,6 @@ def list_command_fabric(user_role, table, list_field: str | None = None, return_
             return table.all()
     
     return inner
-
 
 def get_resource_table(resource_type: str, machinespec_used=True):
     resource_type = resource_type.lower()
@@ -207,27 +204,12 @@ def user_id_from_username(username):
 
 @dataclass
 class Params:
-    needed: set[str] = set()
-    optional: set[str] = set()
+    needed: set[str] = field(default_factory=set)
+    optional: set[str] = field(default_factory=set)
 
 simple_list_params = Params({'target_id'})
 resource_list_params = Params({'resource_type', 'target_id'})
 no_params = Params()
-
-get_commands = {
-    'list_resources': list_resources,
-    'list_user_resources': list_user_resources,
-    'list_usernames': list_usernames,
-    'list_commands': list_command_fabric(UserRole.user, Machine, 'machine_id'),
-    'list_specs': list_command_fabric(UserRole.user, MachineSpec, 'machine_id'),
-    'list_spec_commands': list_command_fabric(UserRole.user, Command, 'spec_id'),
-    'list_groups': list_groups,
-    'list_group_resources': list_group_resources,
-    'list_group_members': list_group_members,
-    'list_groups_i_am_in': list_groups_i_am_in,
-    'user_id_from_username': user_id_from_username,
-    'get_my_username': lambda user_id: user_id_from_username(user_id, user_id),
-}
 
 def add_new_fabric(user_role: str, table, from_ids):
     """
@@ -272,7 +254,7 @@ def change_list_factory(user_role, table, item_table, id_name, item_id_name, lis
         db.session.commit()
     return inner
 
-def add_revoke(args, test=None):
+def add_revoke(*args, test=None):
     return [change_list_factory(*args, action, test=test) for action in ('append', 'remove')]
 
 def add_revoke_resource_commands(target_table, field_names, target_id_name, test=None):
@@ -316,7 +298,7 @@ add_resource_to_group, delete_resource_from_group = add_revoke_resource_commands
 
 add_command_to_spec, delete_command_from_spec = add_revoke(UserRole.user, MachineSpec, Command,
                                                            'spec_id', 'command_id', 'commands',
-                                                           test=lambda spec, command: spec.machine.id == command.machine.id)
+                                                           test=(lambda spec, command: spec.machine.id == command.machine.id))
 add_to_group, delete_from_group = add_revoke(UserRole.user, Group, User,
                                              'group_id', 'target_user_id', 'members')
 
@@ -349,14 +331,27 @@ def check_add_resource_params(params: dict[str, tp.Any]):
         optional_params = {}
     check_params(Params(needed_params, optional_params), params)
 
+def delete_fabric(user_role, table):
+    @test_role(user_role, pass_id=True)
+    def inner(user_id, delete_id):
+        to_del = find_by_id(table, delete_id)
+        test_owner(to_del, user_id)
+        db.session.delete(to_del)
+        db.session.commit()
+    return inner
+
+@pass_resource
+def delete_resource(table, delete_id):
+    return delete_fabric(UserRole.admin, table)(delete_id)
+
 def check_command(command: str, checker: Params | tp.Callable[[dict[str, tp.Any]], None]):
-    needed_params = parameters[command]
+    needed_params = PARAMETERS[command]
     if isinstance(needed_params, Params):
         check_params(needed_params, checker)
     else:
         checker(command)
 
-parameters = {
+PARAMETERS = {
     'add_resource': check_add_resource_params,
     'list_resources': Params({'resource_type'}),
     'delete_resource': Params({'resource_type', 'delete_id'}),
@@ -371,7 +366,7 @@ parameters = {
     'delete_user_account': simple_delete_params,
     'delete_my_account': no_params,
     'list_usernames': no_params,
-    'user_id_from_username': Params(names={'username'}),
+    'user_id_from_username': Params({'username'}),
     'get_my_username': no_params,
     
     'add_spec': Params({'machine_id', 'commands'}),
@@ -394,32 +389,29 @@ parameters = {
     'leave_group': Params({'group_id'}),
 }
 
-post_commands = {
+api_commands = {
+    'list_resources': list_resources,
+    'list_user_resources': list_user_resources,
+    'list_usernames': list_usernames,
+    'list_commands': list_command_fabric(UserRole.user, Machine, 'machine_id'),
+    'list_specs': list_command_fabric(UserRole.user, MachineSpec, 'machine_id'),
+    'list_spec_commands': list_command_fabric(UserRole.user, Command, 'spec_id'),
+    'list_groups': list_groups,
+    'list_group_resources': list_group_resources,
+    'list_group_members': list_group_members,
+    'list_groups_i_am_in': list_groups_i_am_in,
+    'user_id_from_username': user_id_from_username,
+    'get_my_username': lambda user_id: user_id_from_username(user_id, user_id),
+    
     'add_resource': add_resource,
     'add_command': add_new_fabric(UserRole.admin, Command, [('machine_id', Machine)]),
     'give_resource': give_resource,
-    
     'add_spec': add_new_fabric(UserRole.user, MachineSpec,[('machine_id', Machine), ('commands', Command)]),
     'add_command_to_spec': add_command_to_spec,
     'add_resource_to_group': add_resource_to_group,
     'create_group': create_group,
     'add_to_group': add_to_group,
-}
-
-def delete_fabric(user_role, table):
-    @test_role(user_role, pass_id=True)
-    def inner(user_id, delete_id):
-        to_del = find_by_id(table, delete_id)
-        test_owner(to_del, user_id)
-        db.session.delete(to_del)
-        db.session.commit()
-    return inner
-
-@pass_resource
-def delete_resource(table, delete_id):
-    return delete_fabric(UserRole.admin, table)(delete_id)
-
-delete_commands = {
+    
     'delete_resource': delete_resource,
     'delete_command': delete_fabric(UserRole.admin, Command),
     'delete_user_account': delete_fabric(UserRole.admin, User),
@@ -433,6 +425,19 @@ delete_commands = {
     'delete_my_account': lambda user_id: delete_fabric(UserRole.guest, User)(user_id=user_id, delete_id=user_id)
 }
 
+@app.route('/api/<string:method>', methods=['POST']) 
+def call_app(method: str):
+    if method not in api_commands:
+        raise RuntimeError(f'No such method exist: {method}')
+    params = request.get_json()
+    try:
+        with app.app_context():
+            check_command(method, params)
+    except RuntimeError as e:
+        return abort(400, e.args[0])
+    return api_commands[method](**params)
 
-with app.app_context(): ...
+with app.app_context():
+    db.create_all()
+    t = Machine(name="name", url="url", js_path="home/js", aruco_id=1)
 
