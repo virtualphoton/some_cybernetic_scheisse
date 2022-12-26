@@ -5,15 +5,15 @@ from functools import wraps
 
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, abort
+from sqlalchemy.exc import IntegrityError
 
-MAX_NAME_LENGTH = 40
-USER_ID_MAX_LENGTH = 50
-MAX_ARUCO_ID = 1000
+from .constants import MAX_NAME_LENGTH, MAX_ARUCO_ID, ADD_USER_SECRET_KEY, DB_PATH, SECRET_KEY
 
 app = Flask(__name__)
-app.secret_key = b'sth'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test_db.sqlite3'
+app.secret_key = SECRET_KEY
+app.config['SQLALCHEMY_DATABASE_URI'] = DB_PATH
 app.config['SQLAPLCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 db = SQLAlchemy()
 db.init_app(app)
@@ -22,15 +22,11 @@ class UserRole(enum.Enum):
     user = "user"
     admin = "admin"
     guest = "guest"
-ROLES_PRIORITY = {'guest': 1, 'user': 2, 'admin': 3}
-
+ROLES_PRIORITY = {UserRole.guest: 1, UserRole.user: 2, UserRole.admin: 3}
 
 class CameraConnection(enum.Enum):
     usb = "usb"
     url = "url"
-
-def ForeignKeyId(table: str):
-    return db.Column(db.Integer, db.ForeignKey(f'{table}.id'))
 
 def ManyToMany(table_first: str, table_second: str, backref: str):
     table = db.Table(f'{table_first}_{table_second}'.lower(),
@@ -47,21 +43,25 @@ class Machine(db.Model):
     url = db.Column(db.Text, nullable=False)
     js_path = db.Column(db.Text, nullable=False)
     aruco_id = db.Column(db.Integer,
-                         db.CheckConstraint(f'aruco_id > 0 and aruco_id < {MAX_ARUCO_ID}'))
+                         db.CheckConstraint(f'aruco_id > 0 and aruco_id < {MAX_ARUCO_ID}'),
+                         nullable=False, unique=True)
                          
-    specs = db.relationship('MachineSpec', 'machine')
-    commands = db.relationship('Command', 'machine')
+    specs = db.relationship('MachineSpec', backref='machine', cascade="all, delete-orphan")
+    commands = db.relationship('Command', backref='machine', cascade="all, delete-orphan")
+    holder_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     
 class MachineSpec(db.Model):
     __tablename__ = 'machinespec'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     
-    commands = ManyToMany('MachineSpec', 'Command', 'spec')
+    machine_id = db.Column(db.Integer, db.ForeignKey('machine.id'))
+    commands = ManyToMany('MachineSpec', 'Command', 'specs')
 
 class Command(db.Model):
     __tablename__ = 'command'
     id = db.Column(db.Integer, primary_key=True)
+    machine_id = db.Column(db.Integer, db.ForeignKey('machine.id'))
     name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
 
 class Camera(db.Model):
@@ -73,26 +73,28 @@ class Camera(db.Model):
     address = db.Column(db.Text, nullable=False)
     res_x = db.Column(db.Integer, db.CheckConstraint('res_x > 0'))
     res_y = db.Column(db.Integer, db.CheckConstraint('res_x > 0'))
+    holder_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
 class User(db.Model):
     __tablename__ = 'user'
-    id = db.Column(db.String(USER_ID_MAX_LENGTH), primary_key=True)
-    username = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
     
-    role = db.Column(db.Enum(UserRole))
+    username = db.Column(db.String(MAX_NAME_LENGTH), nullable=False, unique=True)
+    role = db.Column(db.Enum(UserRole), nullable=False)
     
-    cameras = db.relationship('Camera', 'holder')
-    machines = db.relationship('Machine', 'holder')
-    groups_created = db.relationship('Group', 'creator')
+    cameras = db.relationship('Camera', backref='holder')
+    machines = db.relationship('Machine', backref='holder')
+    groups_created = db.relationship('Group', backref='creator')
 
 class Group(db.Model):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     
+    creator_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     cameras = ManyToMany('Group', 'Camera', 'groups')
     machine_specs = ManyToMany('Group', 'MachineSpec', 'groups')
-    users = ManyToMany('Group', 'user', 'groups_member')
+    users = ManyToMany('Group', 'User', 'groups_member')
 
 OWNER_PATH = {
     'machine': ['holder'],
@@ -100,6 +102,7 @@ OWNER_PATH = {
     'machinespec': ['machine', 'holder'],
     'command': ['machine', 'holder'],
     'group': ['creator'],
+    'user': []
 }
 
 def test_owner(target, owner_id: str | None = None):
@@ -108,17 +111,54 @@ def test_owner(target, owner_id: str | None = None):
     cur_value = target
     for step in OWNER_PATH[target.__tablename__]:
         cur_value = getattr(cur_value, step)
+    if cur_value is None:
+        raise RuntimeError('Object doesn\'t belong to anyone!')
     if cur_value.id != owner_id:
-        raise RuntimeError(f'Wrong owner of {target}, needed {owner_id}!')
+        raise RuntimeError(f'Wrong owner of {target}!')
 
-def test_role(role: str, pass_id = False):
+@dataclass
+class Serializer:
+    simple_columns: list[str] = field(default_factory=list)
+    many_columns: list[str] = field(default_factory=list)
+    enum_columns: list[str] = field(default_factory=list)
+
+SERIALIZATION_FIELDS = {
+    'machine': Serializer(['id', 'name', 'url', 'js_path', 'aruco_id', 'holder_id'], ['specs', 'commands']),
+    'machinespec': Serializer(['id', 'name', 'machine_id'], ['commands', 'groups']),
+    'command': Serializer(['id', 'name', 'machine_id'], ['specs']),
+    'camera': Serializer(['id', 'name', 'address', 'res_x', 'res_y', 'holder_id'], ['groups'], ['connection']),
+    'user': Serializer(['id', 'username'], ['cameras', 'machines', 'groups_created', 'groups_member'], ['role']),
+    'group': Serializer(['id', 'name', 'creator_id'], ['cameras', 'machine_specs', 'users']),
+}
+
+def serialize_table(obj):
+    serializer = SERIALIZATION_FIELDS[obj.__tablename__]
+    return dict((col, getattr(obj, col)) for col in serializer.simple_columns) | \
+            dict((col, [relation.id for relation in getattr(obj, col)]) for col in serializer.many_columns) | \
+            dict((col, getattr(obj, col).value) for col in serializer.enum_columns)
+
+def serialize(obj):
+    try:
+        jsonify(obj)
+        return obj
+    except TypeError:
+        try:
+            iter(obj)
+        except TypeError:
+            return serialize_table(obj)
+        else:
+            return list(map(serialize_table, obj))
+    
+
+def test_role(role: str | None, pass_id = False):
     def decorator(func):
         @wraps(func)
         def inner(*, user_id, **kwargs):
-            user = find_by_id(User, user_id)
-            if ROLES_PRIORITY[user.role] < ROLES_PRIORITY[role]:
-                raise RuntimeError(
-                    f'Permission denied: user role - {user.role}, needed role - {role}')
+            if role is not None:
+                user = find_by_id(User, user_id)
+                if ROLES_PRIORITY[user.role] < ROLES_PRIORITY[role]:
+                    raise RuntimeError(
+                        f'Permission denied: user role - {user.role}, needed role - {role}')
             return func(**kwargs) if not pass_id else func(user_id=user_id, **kwargs)
         return inner
     return decorator
@@ -131,15 +171,13 @@ def pass_resource(func):
     return inner
 
 def find_by_id(table, id):
-    try:
-        iter(id)
-    except AttributeError:
-        query = table.query.filter_by(id=id)
-        if not query.count():
-            raise RuntimeError(f'Couldn\'t find {id} in {table}')
-        return query.first()
-    else:
-        return table.query.filter(table.id.in_(id))
+    if isinstance(id, list):
+        return table.query.filter(table.id.in_(id)).all()
+    query = table.query.get(id)
+    if not query:
+        raise RuntimeError(f'Couldn\'t find {id} in table `{table.__tablename__}`')
+    return query
+        
 
 def list_command_fabric(user_role, table, list_field: str | None = None, return_all=False):
     @test_role(user_role, pass_id=True)
@@ -149,7 +187,7 @@ def list_command_fabric(user_role, table, list_field: str | None = None, return_
             test_owner(target, user_id)
             return getattr(find_by_id(table, target_id), list_field)
         else:
-            return table.all()
+            return table.query.all()
     
     return inner
 
@@ -167,18 +205,19 @@ def get_resource_table(resource_type: str, machinespec_used=True):
 
 @pass_resource
 def list_resources(user_id, table):
-    return list_command_fabric(UserRole.admin, table, return_all=True)(user_id)
+    # print(table)
+    return list_command_fabric(UserRole.admin, table, return_all=True)(user_id=user_id)
 
 def list_user_resources(user_id, resource_type, target_id):
     get_resource_table(resource_type)
     list_field_name = 'cameras' if resource_type == 'camera' else 'machines'
-    return list_command_fabric(UserRole.admin, User, list_field_name)(user_id, target_id)
+    return list_command_fabric(UserRole.admin, User, list_field_name)(user_id=user_id, target_id=target_id)
 
 def list_usernames(user_id):
-    return [user.username for user in list_command_fabric(UserRole.user, User, return_all=True)(user_id)]
+    return [user.username for user in list_command_fabric(UserRole.user, User, return_all=True)(user_id=user_id)]
 
 def list_groups(user_id):
-    return list_command_fabric(UserRole.user, User, 'groups_created')(user_id, user_id)
+    return list_command_fabric(UserRole.user, User, 'groups_created')(user_id=user_id, target_id=user_id)
 
 @test_role(UserRole.user)
 @pass_resource
@@ -200,7 +239,7 @@ def user_id_from_username(username):
     query = User.query.filter_by(username=username)
     if not query.count():
         raise RuntimeError(f'Couldn\'t find {username} in users')
-    return query.first()
+    return query.first().id
 
 @dataclass
 class Params:
@@ -211,37 +250,44 @@ simple_list_params = Params({'target_id'})
 resource_list_params = Params({'resource_type', 'target_id'})
 no_params = Params()
 
-def add_new_fabric(user_role: str, table, from_ids):
+def add_new_fabric(user_role: str, table, from_ids = None):
     """
     ids_translate: list of tuples (field, table)
     """
     
+    if from_ids is None:
+        from_ids = []
     @test_role(user_role, pass_id=True)
     def inner(user_id, **params):
         for name, from_table in from_ids:
+            # print(name, from_table)
             objects = find_by_id(from_table, params[name])
             if isinstance(params[name], list):
                 for obj in objects:
                     test_owner(obj, user_id)
             else:
                 test_owner(objects, user_id)
+            params[name] = objects
+        # print(f'{params=}')
         obj = table(**params)
         db.session.add(obj)
         db.session.commit()
         return obj
     return inner
 
+@test_role(UserRole.admin)
 @pass_resource
 def add_resource(table, **params):
     obj = table(**params)
     db.session.add(obj)
     db.session.commit()
 
-def change_list_factory(user_role, table, item_table, id_name, item_id_name, list_field_name, action, test=None):
+def change_list_factory(user_role, table, item_table, id_name, item_id_name, list_field_name, action, test=None, to_test_owner=True):
     @test_role(user_role, pass_id=True)
     def inner(user_id, **kwargs):
         target = find_by_id(table, kwargs[id_name])
-        test_owner(target, user_id)
+        if to_test_owner:
+            test_owner(target, user_id)
         item = find_by_id(item_table, kwargs[item_id_name])
         if test is not None:
             if not test(target, item):
@@ -250,18 +296,20 @@ def change_list_factory(user_role, table, item_table, id_name, item_id_name, lis
         if action == 'append':
             list_field.append(item)
         elif action == 'remove':
+            if item not in list_field:
+                raise RuntimeError(f'Element {item} not present in list!')
             list_field.remove(item)
         db.session.commit()
     return inner
 
-def add_revoke(*args, test=None):
-    return [change_list_factory(*args, action, test=test) for action in ('append', 'remove')]
+def add_revoke(*args, test=None, to_test_owner=True):
+    return [change_list_factory(*args, action, test=test, to_test_owner=to_test_owner) for action in ('append', 'remove')]
 
 def add_revoke_resource_commands(target_table, field_names, target_id_name, test=None):
     def inner(action):
         @pass_resource
         def resource_action(table, **kwargs):
-            find_by_id(Group, kwargs[target_id_name])
+            find_by_id(target_table, kwargs[target_id_name])
             list_field_name = field_names[table.__tablename__]
             change_list_factory(
                 UserRole.admin, target_table, table,
@@ -300,19 +348,21 @@ add_command_to_spec, delete_command_from_spec = add_revoke(UserRole.user, Machin
                                                            'spec_id', 'command_id', 'commands',
                                                            test=(lambda spec, command: spec.machine.id == command.machine.id))
 add_to_group, delete_from_group = add_revoke(UserRole.user, Group, User,
-                                             'group_id', 'target_user_id', 'members')
+                                             'group_id', 'target_user_id', 'users')
+_, delete_self_from_group = add_revoke(UserRole.user, Group, User,
+                                             'group_id', 'target_user_id', 'users', to_test_owner=False)
 
 def create_group(user_id, **params):
-    holder = find_by_id(User, user_id)
-    add_new_fabric(UserRole.user, MachineSpec, [('machine_specs', MachineSpec), ('cameras', Camera)])\
-        (user_id=user_id, holder=holder, **params)
+    creator = find_by_id(User, user_id)
+    add_new_fabric(UserRole.user, Group, [('machine_specs', MachineSpec), ('cameras', Camera)])\
+        (user_id=user_id, creator=creator, **params)
 
 simple_delete_params = Params({'delete_id'})
 
-def check_params(needed_params: Params, params: dict[str, tp.Any]):
+def check_params(needed_params: Params, params: dict[str, tp.Any], add_user_id=True):
     params_given = set(params)
-    needed = needed_params.needed | {'user_id'}
-    possible_params = needed + needed_params.optional
+    needed = needed_params.needed | ({'user_id'} if add_user_id else set())
+    possible_params = needed | needed_params.optional
     if not params_given.issubset(possible_params):
         raise RuntimeError(f'Excessive: {params_given - possible_params}')
     if not params_given.issuperset(needed):
@@ -328,7 +378,7 @@ def check_add_resource_params(params: dict[str, tp.Any]):
         optional_params = {'res_x', 'res_y'}
     elif params['resource_type'] == 'machine':
         needed_params |= {'url', 'js_path', 'aruco_id'}
-        optional_params = {}
+        optional_params = set()
     check_params(Params(needed_params, optional_params), params)
 
 def delete_fabric(user_role, table):
@@ -341,15 +391,27 @@ def delete_fabric(user_role, table):
     return inner
 
 @pass_resource
-def delete_resource(table, delete_id):
-    return delete_fabric(UserRole.admin, table)(delete_id)
+def delete_resource(user_id, table, delete_id):
+    return delete_fabric(UserRole.admin, table)(user_id=user_id, delete_id=delete_id)
 
-def check_command(command: str, checker: Params | tp.Callable[[dict[str, tp.Any]], None]):
-    needed_params = PARAMETERS[command]
-    if isinstance(needed_params, Params):
-        check_params(needed_params, checker)
+def check_command(command: str, params: dict[str, tp.Any]):
+    checker = PARAMETERS[command]
+    if isinstance(checker, Params):
+        check_params(checker, params)
     else:
-        checker(command)
+        checker(params)
+
+
+def add_user(secret_key: str, role: str, username: str):
+    if secret_key == ADD_USER_SECRET_KEY:
+        if role == 'admin' and User.query.filter_by(role='admin').count():
+            raise RuntimeError('More than 1 admins')
+        add_new_fabric(None, User)(user_id=None, role=role, username=username)
+    else:
+        raise RuntimeError('Forbidden, wrong secret key!')
+
+def check_add_user_params(params):
+    check_params(Params({'secret_key', 'role', 'username'}), params, False)
 
 PARAMETERS = {
     'add_resource': check_add_resource_params,
@@ -359,24 +421,25 @@ PARAMETERS = {
     'list_user_resources': resource_list_params,
     'revoke_resource': Params({'target_user_id', 'resource_type', 'resource_id'}),
     
-    'add_command': Params({'machine_id', 'command_name'}),
+    'add_command': Params({'machine', 'name'}),
     'list_commands': simple_list_params,
     'delete_command': simple_delete_params,
     
+    'add_user': check_add_user_params,
     'delete_user_account': simple_delete_params,
     'delete_my_account': no_params,
     'list_usernames': no_params,
     'user_id_from_username': Params({'username'}),
     'get_my_username': no_params,
     
-    'add_spec': Params({'machine_id', 'commands'}),
+    'add_spec': Params({'name', 'machine', 'commands'}),
     'list_specs': simple_list_params,
     'delete_spec': simple_delete_params,
     'add_command_to_spec': Params({'spec_id', 'command_id'}),
     'list_spec_commands': simple_list_params,
     'delete_command_from_spec': Params({'spec_id', 'command_id'}),
     
-    'create_group': Params({'cameras', 'machine_specs'}),
+    'create_group': Params({'name', 'cameras', 'machine_specs'}),
     'list_groups': no_params,
     'delete_group': simple_delete_params,
     'add_resource_to_group': Params({'group_id', 'resource_type', 'resource_id'}),
@@ -393,20 +456,21 @@ api_commands = {
     'list_resources': list_resources,
     'list_user_resources': list_user_resources,
     'list_usernames': list_usernames,
-    'list_commands': list_command_fabric(UserRole.user, Machine, 'machine_id'),
-    'list_specs': list_command_fabric(UserRole.user, MachineSpec, 'machine_id'),
-    'list_spec_commands': list_command_fabric(UserRole.user, Command, 'spec_id'),
+    'list_commands': list_command_fabric(UserRole.user, Machine, 'commands'),
+    'list_specs': list_command_fabric(UserRole.user, Machine, 'specs'),
+    'list_spec_commands': list_command_fabric(UserRole.user, MachineSpec, 'commands'),
     'list_groups': list_groups,
     'list_group_resources': list_group_resources,
     'list_group_members': list_group_members,
     'list_groups_i_am_in': list_groups_i_am_in,
     'user_id_from_username': user_id_from_username,
-    'get_my_username': lambda user_id: user_id_from_username(user_id, user_id),
+    'get_my_username': lambda user_id: find_by_id(User, user_id).username,
     
+    'add_user': add_user,
     'add_resource': add_resource,
-    'add_command': add_new_fabric(UserRole.admin, Command, [('machine_id', Machine)]),
+    'add_command': add_new_fabric(UserRole.admin, Command, [('machine', Machine)]),
     'give_resource': give_resource,
-    'add_spec': add_new_fabric(UserRole.user, MachineSpec,[('machine_id', Machine), ('commands', Command)]),
+    'add_spec': add_new_fabric(UserRole.user, MachineSpec, [('machine', Machine), ('commands', Command)]),
     'add_command_to_spec': add_command_to_spec,
     'add_resource_to_group': add_resource_to_group,
     'create_group': create_group,
@@ -421,23 +485,38 @@ api_commands = {
     'delete_resource_from_group': delete_resource_from_group,
     'delete_from_group': delete_from_group,
     'delete_group': delete_fabric(UserRole.user, Group),
-    'leave_group': (lambda user_id, group_id: delete_from_group(user_id=user_id, group_id=group_id, target_user_id=user_id)),
+    'leave_group': (lambda user_id, group_id: delete_self_from_group(user_id=user_id, group_id=group_id, target_user_id=user_id)),
     'delete_my_account': lambda user_id: delete_fabric(UserRole.guest, User)(user_id=user_id, delete_id=user_id)
 }
 
 @app.route('/api/<string:method>', methods=['POST']) 
 def call_app(method: str):
-    if method not in api_commands:
-        raise RuntimeError(f'No such method exist: {method}')
-    params = request.get_json()
     try:
+        if method not in api_commands:
+            raise RuntimeError(f'No such method exist: {method}')
+        params = request.get_json()
+        # print(method, params)
+        
         with app.app_context():
+            # in case any changes were made
+            db.session.rollback()
             check_command(method, params)
-    except RuntimeError as e:
+        res = api_commands[method](**params)
+    except (RuntimeError, IntegrityError) as e:
         return abort(400, e.args[0])
-    return api_commands[method](**params)
+    
+    # print(f'{res=}')
+    if res is None:
+        return jsonify({})
+    return jsonify(serialize(res))
+
+@app.teardown_request
+def teardown_request(exception):
+    with app.app_context():
+        if exception:
+            db.session.rollback()
+        db.session.remove()
 
 with app.app_context():
     db.create_all()
-    t = Machine(name="name", url="url", js_path="home/js", aruco_id=1)
-
+    db.session.commit()
