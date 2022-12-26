@@ -2,47 +2,36 @@ from .oauth_tools import register_google
 from flask import Blueprint, session, redirect
 from authlib.integrations.flask_client import OAuth
 from flask import url_for, current_app, render_template
+from flask_jwt_router import JwtRoutes
+from flask_sqlalchemy import SQLAlchemy
+from flask import request
+
+db = SQLAlchemy()
 
 authorization = Blueprint('authorization', __name__)
 
-oauth = OAuth(current_app)
-register_google(oauth)
+current_app.config["JWT_ROUTER_API_NAME"] = "/api/v1"
 
 
-@authorization.route('/login')
+class UserModel(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
+
+
+jwt_routes = JwtRoutes()
+jwt_routes.init_app(
+    current_app,
+    entity_models=[UserModel],
+)
+
+
+@authorization.route("/api/v1/register", methods=["POST"])
+def register():
+    return "I don't need authorizing!"
+
+
+@authorization.route("/login", methods=["POST"])
 def login():
-    return render_template('login.html')
-
-
-@authorization.route('/login/google')
-def login_google():
-    google = oauth.create_client('google')
-    redirect_uri = url_for('.authorize', _external=True)
-    return google.authorize_redirect(redirect_uri)
-
-
-@authorization.route('/login/authorize')
-def authorize():
-    google = oauth.create_client('google')
-    token = google.authorize_access_token()
-    resp = google.get('userinfo', token=token)
-    user_info = resp.json()
-    print(user_info)
-    user = oauth.google.userinfo()  # uses openid endpoint to fetch user info
-    print(help(oauth.google.userinfo))
-    print(user)
-    session['profile'] = user_info
-    session.permanent = True
-    return redirect(url_for('.home'))
-
-
-@authorization.route('/logout')
-def logout():
-    for key in list(session.keys()):
-        session.pop(key)
-    return redirect(url_for('.home'))
-
-
-@authorization.route('/home')
-def home():
-    return 'Well... hi!'
+    data = jwt_routes.google.oauth_login(request)  # Pass in Flask's request
+    return data, 200

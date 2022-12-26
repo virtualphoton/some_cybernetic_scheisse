@@ -14,6 +14,7 @@ from datetime import timedelta
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config['SESSION_COOKIE_NAME'] = 'google-login-session'
+app.config['SECRET_KEY'] = 'your_app_secret_key'
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)
 app.register_blueprint(authorization)
 
