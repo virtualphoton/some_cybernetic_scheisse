@@ -57,7 +57,7 @@ class MachineSpec(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
     
-    commands = ManyToMany('MachineSpec', 'Command', 'specs')
+    commands = ManyToMany('MachineSpec', 'Command', 'spec')
 
 class Command(db.Model):
     __tablename__ = 'command'
@@ -210,7 +210,7 @@ class Params:
     needed: set[str] = set()
     optional: set[str] = set()
 
-simle_list_params = Params({'target_id'})
+simple_list_params = Params({'target_id'})
 resource_list_params = Params({'resource_type', 'target_id'})
 no_params = Params()
 
@@ -272,16 +272,6 @@ def change_list_factory(user_role, table, item_table, id_name, item_id_name, lis
         db.session.commit()
     return inner
 
-@test_role(UserRole.admin)
-def delete_resource(resource_type: str, resource_id: int):
-    
-    
-    query = resource_table.query.filter_by(id=resource_id)
-    if not query.count():
-        raise RuntimeError(f'Such resource does not exist: {resource_type}, {resource_id}')
-    db.session.delete(query.first())
-    db.session.commit()
-
 def add_revoke(args, test=None):
     return [change_list_factory(*args, action, test=test) for action in ('append', 'remove')]
 
@@ -339,11 +329,12 @@ simple_delete_params = Params({'delete_id'})
 
 def check_params(needed_params: Params, params: dict[str, tp.Any]):
     params_given = set(params)
-    possible_params = needed_params.needed + needed_params.optional
+    needed = needed_params.needed | {'user_id'}
+    possible_params = needed + needed_params.optional
     if not params_given.issubset(possible_params):
         raise RuntimeError(f'Excessive: {params_given - possible_params}')
-    if not params_given.issuperset(needed_params.needed):
-        raise RuntimeError(f'Lacking: {needed_params.needed - params_given}')
+    if not params_given.issuperset(needed):
+        raise RuntimeError(f'Lacking: {needed - params_given}')
 
 def check_add_resource_params(params: dict[str, tp.Any]):
     params_given = set(params)
@@ -366,44 +357,41 @@ def check_command(command: str, checker: Params | tp.Callable[[dict[str, tp.Any]
         checker(command)
 
 parameters = {
-    'list_commands': simle_list_params,
-    'list_specs': simle_list_params,
-    'list_spec_commands': simle_list_params,
-    'list_group_members': simle_list_params,
-    
-    'list_resources': resource_list_params,
+    'add_resource': check_add_resource_params,
+    'list_resources': Params({'resource_type'}),
+    'delete_resource': Params({'resource_type', 'delete_id'}),
+    'give_resource': Params({'target_user_id', 'resource_type', 'resource_id'}),
     'list_user_resources': resource_list_params,
-    'list_group_resources': resource_list_params,
+    'revoke_resource': Params({'target_user_id', 'resource_type', 'resource_id'}),
     
-    'list_groups': no_params,
+    'add_command': Params({'machine_id', 'command_name'}),
+    'list_commands': simple_list_params,
+    'delete_command': simple_delete_params,
+    
+    'delete_user_account': simple_delete_params,
+    'delete_my_account': no_params,
     'list_usernames': no_params,
-    'list_groups_i_am_in': no_params,
+    'user_id_from_username': Params(names={'username'}),
     'get_my_username': no_params,
     
-    'user_id_from_username': Params(names={'username'}),
-    
-    'add_resource': check_add_resource_params,
-    'add_command': Params({'machine_id', 'command_name'}),
     'add_spec': Params({'machine_id', 'commands'}),
-    'give_resource': Params({'target_user_id', 'resource_type', 'resource_id'}),
-    'add_command_to_spec': Params({'spec_id', 'command_id'}),
-    'add_resource_to_group': Params({'group_id', 'resource_type', 'resource_id'}),
-    'create_group': Params({'cameras', 'machine_specs'}),
-    'add_to_group': Params({'group_id', 'target_user_id'}),
-    
-    'delete_resource': Params({'resource_type', 'resource_id'}),
-    'delete_command': simple_delete_params,
-    'delete_user_account': simple_delete_params,
+    'list_specs': simple_list_params,
     'delete_spec': simple_delete_params,
-    'delete_group': simple_delete_params,
-    
-    'revoke_resource': Params({'target_user_id', 'resource_type', 'resource_id'}),
-    'delete_resource': Params({'resource_type', 'resource_id'}),
+    'add_command_to_spec': Params({'spec_id', 'command_id'}),
+    'list_spec_commands': simple_list_params,
     'delete_command_from_spec': Params({'spec_id', 'command_id'}),
+    
+    'create_group': Params({'cameras', 'machine_specs'}),
+    'list_groups': no_params,
+    'delete_group': simple_delete_params,
+    'add_resource_to_group': Params({'group_id', 'resource_type', 'resource_id'}),
+    'list_group_resources': Params({'group_id', 'resource_type'}),
     'delete_resource_from_group': Params({'group_id', 'resource_type', 'resource_id'}),
+    'add_to_group': Params({'group_id', 'target_user_id'}),
+    'list_group_members': simple_list_params,
     'delete_from_group': Params({'group_id', 'target_user_id'}),
-    'leave_group': no_params,
-    'delete_my_account': no_params
+    'list_groups_i_am_in': no_params,
+    'leave_group': Params({'group_id'}),
 }
 
 post_commands = {
@@ -428,8 +416,8 @@ def delete_fabric(user_role, table):
     return inner
 
 @pass_resource
-def delete_resource(table, resource_id):
-    return delete_fabric(UserRole.admin, table)(resource_id)
+def delete_resource(table, delete_id):
+    return delete_fabric(UserRole.admin, table)(delete_id)
 
 delete_commands = {
     'delete_resource': delete_resource,
