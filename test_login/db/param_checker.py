@@ -37,55 +37,31 @@ def check_add_resource_params(params: dict[str, tp.Any]):
         optional_params = set()
     check_params(Params(needed_params, optional_params), params)
 
-
-def check_add_user_params(params):
-    check_params(Params({"secret_key", "role", "username"}), params, False)
-
-
-PARAMETERS = {
-    "add_resource": check_add_resource_params,
-    "list_resources": Params({"resource_type"}),
-    "delete_resource": Params({"resource_type", "delete_id"}),
-    "give_resource": Params({"target_user_id", "resource_type", "resource_id"}),
-    "list_user_resources": resource_list_params,
-    "revoke_resource": Params({"target_user_id", "resource_type", "resource_id"}),
-    
-    "add_command": Params({"machine", "name"}),
-    "list_commands": simple_list_params,
-    "delete_command": simple_delete_params,
-    
-    "add_user": check_add_user_params,
-    "delete_user_account": simple_delete_params,
-    "delete_my_account": no_params,
-    "list_usernames": no_params,
-    "user_id_from_username": Params({"username"}),
-    "get_my_username": no_params,
-    "list_users": no_params,
-    
-    "add_spec": Params({"name", "machine", "commands"}),
-    "list_specs": simple_list_params,
-    "delete_spec": simple_delete_params,
-    "add_command_to_spec": Params({"spec_id", "command_id"}),
-    "list_spec_commands": simple_list_params,
-    "delete_command_from_spec": Params({"spec_id", "command_id"}),
-    
-    "create_group": Params({"name", "cameras", "machine_specs"}),
-    "list_groups": no_params,
-    "delete_group": simple_delete_params,
-    "add_resource_to_group": Params({"group_id", "resource_type", "resource_id"}),
-    "list_group_resources": Params({"group_id", "resource_type"}),
-    "delete_resource_from_group": Params({"group_id", "resource_type", "resource_id"}),
-    "add_to_group": Params({"group_id", "target_user_id"}),
-    "list_group_members": simple_list_params,
-    "delete_from_group": Params({"group_id", "target_user_id"}),
-    "list_groups_i_am_in": no_params,
-    "leave_group": Params({"group_id"}),
-    "get_group": Params({"group_id"}),
-}
-
 def check_command(command: str, params: dict[str, tp.Any]):
     checker = PARAMETERS[command]
     if isinstance(checker, Params):
         check_params(checker, params)
     else:
         checker(params)
+
+PARAMETERS = {
+    "add_resource": check_add_resource_params,
+    "list_resources": Params({"resource_type"}),
+    "delete_resource": Params({"resource_type", "delete_id"}),
+    
+    "add_command": Params({"machine", "name"}),
+    "list_commands": simple_list_params,
+    "delete_command": simple_delete_params,
+
+    "delete_user_account": simple_delete_params,
+    "delete_my_account": no_params,
+    "get_my_username": no_params,
+    "list_users": no_params,
+    
+    "list_groups": no_params,
+    "get_group": Params({"group_id"}),
+    "modify_group": Params({"group_id", "name", "description", "cameras", "machines", "users"}),
+    "delete_group": simple_delete_params,
+    "list_groups_i_am_in": no_params,
+    "leave_group": Params({"group_id"}),
+}

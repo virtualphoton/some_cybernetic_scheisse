@@ -1,12 +1,6 @@
-from .models import db, UserRole, Group, Camera, User, Command, Machine, MachineSpec
-from .factories import (
-    list_command_factory,
-    add_new_factory,
-    delete_factory,
-    add_revoke,
-    add_revoke_resource_commands
-)
-from .utils import find_by_id, get_resource_table, pass_resource, test_role
+from ..extensions import db
+from .factories import add_new_factory
+from .models import User
 
 def add_user(role: str, username: str, email: str):
     if role == "admin" and User.query.filter_by(role="admin").count():

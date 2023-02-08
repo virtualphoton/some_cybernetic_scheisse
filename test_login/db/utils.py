@@ -1,30 +1,8 @@
 from functools import wraps
 
-from .models import Camera, Machine, MachineSpec, User, UserRole
+from .models import Camera, Machine, User, UserRole
 
-OWNER_PATH = {
-    "machine": ["holder"],
-    "camera": ["holder"],
-    "machinespec": ["machine", "holder"],
-    "command": ["machine", "holder"],
-    "group": ["creator"],
-    "user": []
-}
-
-ROLES_PRIORITY = {UserRole.guest: 1, UserRole.user: 2, UserRole.admin: 3}
-
-
-def test_owner(target, owner_id: str | None = None):
-    if owner_id is None or find_by_id(User, owner_id).role == UserRole.admin:
-        return
-    cur_value = target
-    for step in OWNER_PATH[target.__tablename__]:
-        cur_value = getattr(cur_value, step)
-    if cur_value is None:
-        raise RuntimeError("Object doesn\'t belong to anyone!")
-    if cur_value.id != owner_id:
-        raise RuntimeError(f"Wrong owner of {target}!")
-
+ROLES_PRIORITY = {UserRole.user: 1, UserRole.admin: 2}
 
 def test_role(role: str | None, pass_id = False):
     def decorator(func):
@@ -40,14 +18,13 @@ def test_role(role: str | None, pass_id = False):
     return decorator
 
 
-def get_resource_table(resource_type: str, machinespec_used=True):
+def get_resource_table(resource_type: str):
     resource_type = resource_type.lower()
-    if resource_type == "machinespec" and not machinespec_used or resource_type not in ("camera", "machine", "machinespec"):
+    if resource_type not in ("camera", "machine"):
         raise RuntimeError(f"Wrong resource type: {resource_type}")
     resource_table = {
         "camera": Camera,
         "machine": Machine,
-        "machinespec": MachineSpec
     }[resource_type]
     
     return resource_table

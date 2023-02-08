@@ -6,7 +6,6 @@ from ..extensions import db
 class UserRole(enum.Enum):
     user = "user"
     admin = "admin"
-    guest = "guest"
 
 class CameraConnection(enum.Enum):
     usb = "usb"
@@ -29,18 +28,8 @@ class Machine(db.Model):
     aruco_id = db.Column(db.Integer,
                          db.CheckConstraint(f"aruco_id > 0 and aruco_id < {MAX_ARUCO_ID}"),
                          nullable=False, unique=True)
-                         
-    specs = db.relationship("MachineSpec", backref="machine", cascade="all, delete-orphan")
+        
     commands = db.relationship("Command", backref="machine", cascade="all, delete-orphan")
-    holder_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    
-class MachineSpec(db.Model):
-    __tablename__ = "machinespec"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
-    
-    machine_id = db.Column(db.Integer, db.ForeignKey("machine.id"))
-    commands = ManyToMany("MachineSpec", "Command", "specs")
 
 class Command(db.Model):
     __tablename__ = "command"
@@ -57,7 +46,6 @@ class Camera(db.Model):
     address = db.Column(db.Text, nullable=False)
     res_x = db.Column(db.Integer, db.CheckConstraint("res_x > 0"))
     res_y = db.Column(db.Integer, db.CheckConstraint("res_x > 0"))
-    holder_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
 class User(db.Model):
     __tablename__ = "user"
@@ -66,17 +54,13 @@ class User(db.Model):
     username = db.Column(db.String(MAX_NAME_LENGTH), nullable=False, unique=True)
     email = db.Column(db.Text, nullable=False, unique=True)
     role = db.Column(db.Enum(UserRole), nullable=False)
-    
-    cameras = db.relationship("Camera", backref="holder")
-    machines = db.relationship("Machine", backref="holder")
-    groups_created = db.relationship("Group", backref="creator")
 
 class Group(db.Model):
     __tablename__ = "group"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(MAX_NAME_LENGTH), nullable=False)
+    description = db.Column(db.Text)
     
-    creator_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     cameras = ManyToMany("Group", "Camera", "groups")
-    machine_specs = ManyToMany("Group", "MachineSpec", "groups")
+    machines = ManyToMany("Group", "Machine", "groups")
     users = ManyToMany("Group", "User", "groups_member")

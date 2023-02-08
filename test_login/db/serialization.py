@@ -1,5 +1,4 @@
 from dataclasses import dataclass, field
-from enum import Enum
 
 from flask import jsonify
 
@@ -10,12 +9,11 @@ class Serializer:
     enum_columns: list[str] = field(default_factory=list)
 
 SERIALIZATION_FIELDS = {
-    "machine": Serializer(["id", "name", "url", "js_path", "aruco_id", "holder_id"], ["specs", "commands"]),
-    "machinespec": Serializer(["id", "name", "machine_id"], ["commands", "groups"]),
-    "command": Serializer(["id", "name", "machine_id"], ["specs"]),
-    "camera": Serializer(["id", "name", "address", "res_x", "res_y", "holder_id"], ["groups"], ["connection"]),
-    "user": Serializer(["id", "username", "email"], ["cameras", "machines", "groups_created", "groups_member"], ["role"]),
-    "group": Serializer(["id", "name", "creator_id"], ["cameras", "machine_specs", "users"]),
+    "machine": Serializer(["id", "name", "url", "js_path", "aruco_id"], ["commands"]),
+    "command": Serializer(["id", "name", "machine_id"]),
+    "camera": Serializer(["id", "name", "address", "res_x", "res_y"], ["groups"], ["connection"]),
+    "user": Serializer(["id", "username", "email"], ["cameras", "machines", "groups_member"], ["role"]),
+    "group": Serializer(["id", "name"], ["cameras", "machines", "users"]),
 }
 
 def serialize_table(obj):
