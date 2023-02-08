@@ -6,3 +6,10 @@ Pillow>=8.3.2
 pyserial>=3.5
 opencv-python>=4.5.3
 authlib>=1.0.1
+google-auth-oauthlib
+google-auth
+pyjwt
+python-dotenv
+flask_cors
+SQLAlchemy
+Flask-SQLAlchemy
