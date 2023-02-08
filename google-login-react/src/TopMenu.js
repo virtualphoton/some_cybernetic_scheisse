@@ -1,48 +1,36 @@
-import React, { Component } from 'react'
-import { Button, Menu, Dropdown } from 'semantic-ui-react'
+import React, { Component, useState } from "react";
+import { Button, Menu, Dropdown } from "semantic-ui-react";
+import { Link, useLocation, useNavigate} from "react-router-dom";
 
-export default class TopMenu extends Component {
-  state = {}
+import {handleLogout} from "./components/SignIn/Signin"
 
-  handleItemClick = (e, { name }) => this.setState({ activeItem: name })
-
-  render() {
-    const { activeItem } = this.state
-
-    return (
-      <Menu>
-        <Menu.Item
-          name='stream'
-          active={activeItem === 'stream'}
-          onClick={this.handleItemClick}
-        >
-          Stream
-        </Menu.Item>
-
-        <Menu.Item
-          name='groups'
-          active={activeItem === 'groups'}
-          onClick={this.handleItemClick}
-        >
-          Groups
-        </Menu.Item>
-        
-        <Menu.Item
-          name='admin'
-          active={activeItem === 'admin'}
-        >
-          <Dropdown text='Administrating'>
-            <Dropdown.Menu>
-              <Dropdown.Item name='admin' onClick={this.handleItemClick}>Resources</Dropdown.Item>
-              <Dropdown.Item name='admin' onClick={this.handleItemClick}>Users</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Menu.Item>
-        
-        <Menu.Item position='right'>
-          <Button>Log-in</Button>
-        </Menu.Item>
-      </Menu>
-    )
-  }
+export default function TopMenu(prop) {
+  const location = useLocation();
+  const locChecker = (path => location.pathname === path);
+  
+  let nav = useNavigate();
+  
+  return (
+    <Menu>
+      <Menu.Item active={locChecker("/stream")}
+                 as={Link} to="/stream"
+                 content="Stream"/>
+      
+      <Menu.Item active={locChecker("/groups")}
+                 as={Link} to="/groups"
+                 content="Groups"/>
+      
+      <Dropdown item text="Administrating"
+                as={Menu.Item} active={locChecker("/users") || locChecker("/resources")}>
+        <Dropdown.Menu>
+          <Dropdown.Item onClick={() => nav("/resources")}>Resources</Dropdown.Item>
+          <Dropdown.Item onClick={() => nav("/users")}>Users</Dropdown.Item >
+        </Dropdown.Menu>
+      </Dropdown>
+      
+      <Menu.Item position="right">
+        <Button onClick={() => handleLogout(nav)}>Log out</Button>
+      </Menu.Item>
+    </Menu>
+  )
 }

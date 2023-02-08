@@ -11,11 +11,9 @@ styleLink.href = "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css
 document.head.appendChild(styleLink);
 
 ReactDOM.render(
-  <StrictMode>
     <BrowserRouter>
       <App />
-    </BrowserRouter>
-  </StrictMode>,
+    </BrowserRouter>,
   document.getElementById("root")
 );
 

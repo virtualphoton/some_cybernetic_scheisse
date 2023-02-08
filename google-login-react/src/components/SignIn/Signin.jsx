@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router";
 
+export function handleLogout(nav) {
+  localStorage.removeItem('JWT')
+  return nav("/login")
+}
+
 function SignIn(props) {
   const nav = useNavigate();
 
