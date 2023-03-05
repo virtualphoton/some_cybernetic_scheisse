@@ -28,6 +28,10 @@ export default function TopMenu(prop) {
         </Dropdown.Menu>
       </Dropdown>
       
+      <Menu.Item active={locChecker("/console")}
+                 as={Link} to="/console"
+                 content="DB console"/>
+                 
       <Menu.Item position="right">
         <Button onClick={() => handleLogout(nav)}>Log out</Button>
       </Menu.Item>

@@ -1,6 +1,6 @@
 import { ReactTerminal } from "react-terminal";
 import React, { useState, useRef, useEffect } from 'react';
-import axios from "axios";
+import Axios from "axios";
 
 const LOCAL_STORAGE_TERMINAL_KEY = 'someApp.terminal'
 const default_commands = {

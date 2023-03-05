@@ -15,5 +15,5 @@ export function callDbApi(func, data={}) {
 }
 
 export function callApiInto(method, setState, data={}) {
-  return () => {callDbApi(method, data).then(response => setState(response.data))};
+  return () => callDbApi(method, data).then(response => setState(response.data));
 }
