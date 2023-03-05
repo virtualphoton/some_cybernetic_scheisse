@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, Form, Tab, TextArea, List, Dropdown } from 'semantic-ui-react'
+import { useNavigate} from "react-router-dom";
 
 import { callApiInto, callDbApi } from '../../utils';
 
@@ -10,54 +11,82 @@ function createPane(title, content) {
   };
 }
 
-function AppendableList(retrieve_all, selected_ids, repr) {
-  const [all, setAll] = useState([]);
-  const [selected, setSelected] = useState([]);
-  const [unselectedList, setUnselected] = useState([]);
-  
-  useEffect(retrieve_all(setAll), []);
-  useEffect(() => setSelected([...all].filter(item => selected_ids.includes(item.id))), [all]);
-  useEffect(() => {
-    let used_ids = selected.map(item => item.id);
-    let unselected = [...all].filter(item => !used_ids.includes(item.id))
-    setUnselected(unselected.map(
-      item => {return {key: item.id, value: item.id, text: repr(item)}}
-    ));
-    console.log(selected);
-  }, [selected]);
-  
-  function deleter(id) {
-    return () => setSelected(selected.filter(item => item.id !== id));
+function makeStrNonEmpry(str) {
+  return str === ""? " " : str
+}
+
+function toIds(arr) {
+  return arr.map(item => item.id);
+}
+
+export function renderList(items, repr, additionalContent = null) {
+  if (additionalContent === null) {
+    additionalContent = () => <></>
   }
-  return [(
+  
+  return (
     <List divided verticalAlign='middle'>
-      {selected.map(item =>
+      {items.map(item =>
         <List.Item key={item.id}>
           <List.Content floated='right'>
-            <Button negative
-                    icon="close"
-                    onClick={deleter(item.id)}
-            /> 
+            {additionalContent(item)}
           </List.Content>
           
           <List.Content content={repr(item)}/>
         </List.Item>
       )}
-      
-      <Dropdown placeholder='Add new (Esc, to close selection)'
-                search selection
-                value={""}
-                options={unselectedList}
-                onChange={(_, {value}) => 
-                  setSelected([...selected, all.find(item => item.id === value)])}
-      />
     </List>
+  )
+}
+
+function AppendableList(retrieve_all, selected_ids_sent, repr) {
+  const [all, setAll] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [unselectedList, setUnselected] = useState([]);
+  
+  useEffect(retrieve_all(setAll), []);
+  useEffect(() => setSelected(all.filter(item => selected_ids_sent.includes(item.id))), [all, selected_ids_sent]);
+  useEffect(() => {
+    let used_ids = selected.map(item => item.id);
+    let unselected = all.filter(item => !used_ids.includes(item.id))
+    setUnselected(unselected.map(
+      item => {return {key: item.id, value: item.id, text: repr(item)}}
+    ));
+  }, [selected]);
+  
+  function deleter(id) {
+    return () => setSelected(selected.filter(item => item.id !== id));
+  }
+  
+  return [(
+    <>
+    {renderList(selected, repr, (item) =>
+      <Button negative
+              icon="close"
+              onClick={deleter(item.id)}
+      />
+    )}
+    
+    <Dropdown placeholder='Add new (Esc, to close selection)'
+              search selection
+              value={""}
+              options={unselectedList}
+              onChange={(_, {value}) => 
+              setSelected([...selected, all.find(item => item.id === value)])}
+    />
+    </>
   ), selected];
 }
 
-function DescriptionTab(group) {
-  const [name, setName] = useState(group.name);
-  const [descr, setDescr] = useState(group.description);
+function DescriptionTab(groupReceived) {
+  const [name, setName] = useState("");
+  const [descr, setDescr] = useState(" ");
+  
+  useEffect(() => {
+    setName(groupReceived.name);
+    setDescr(makeStrNonEmpry(groupReceived.description));
+  }, [groupReceived])
+  
   return [(
     <Form>
       <Form.Field name='name'
@@ -65,14 +94,13 @@ function DescriptionTab(group) {
                   value={name}
                   label='Group name'
                   onChange={(e, { value }) => setName(value)}
-                  inline
       />
       
       <Form.Field name='description'
                   control={TextArea}
                   value={descr}
-                  label='Group name'
-                  onChange={(e, { value }) => setDescr(value)}
+                  label='Group description'
+                  onChange={(e, { value }) => setDescr(makeStrNonEmpry(value))}
       />
     </Form>
   ), name, descr]
@@ -83,11 +111,11 @@ export default function ModifyGroup() {
                                       cameras: [], machine_specs: [], users: []})
   const query = new URLSearchParams(window.location.search);
   let group_id = query.get("group_id");
-  if (group_id === null) {
-    // TODO
-  } else {
-    //useEffect(callApiInto("get_group", setGroup, {group_id: Number()}), []);
+  let caller = () => null;
+  if (group_id !== null) {
+    caller = callApiInto("get_group", setGroup, {group_id: Number(group_id)});
   }
+  useEffect(caller, []);
   
   const [descriptionTab, name, descr] = DescriptionTab(group);
   
@@ -107,27 +135,29 @@ export default function ModifyGroup() {
     user => `${user.username} (${user.email})`
   )
   
-  const panes = [
-    createPane('Description', descriptionTab),
-    createPane('Machines', machinesTab),
-    createPane('Cameras', camerasTab),
-    createPane('Users', usersTab),
-  ]
-  
-  const toIds = arr => arr.map(item => item.id);
+  let nav = useNavigate();
   
   return (
     <>
-      <Tab panes={panes} />
+      <Tab panes={[
+        createPane('Description', descriptionTab),
+        createPane('Machines', machinesTab),
+        createPane('Cameras', camerasTab),
+        createPane('Users', usersTab),
+      ]}/>
+      
       <Button primary
               content="Save"
-              onClick={() => callDbApi("update_group", {
-                group_id: group_id,
-                name: name, description: descr,
-                machines: toIds(machines),
-                cameras: toIds(cameras),
-                users: toIds(users),
-              })}
+              onClick={() => {
+                callDbApi("modify_group", {
+                  group_id: group_id,
+                  name: name,
+                  description: descr,
+                  machines: toIds(machines),
+                  cameras: toIds(cameras),
+                  users: toIds(users),
+                }).then(response => nav(`/modifygroup?group_id=${response.data.id}`));
+              }}
       /> 
     </>
   )

@@ -29,8 +29,9 @@ def call_api(method: str, decoded_jwt: dict[str, str]):
     except (RuntimeError, IntegrityError) as e:
         print(e.args[0])
         return abort(400, e.args[0])
-    print(f'{res=}')
-    return serialize(res)
+    serialized = serialize(res)
+    print(f'{serialized=}')
+    return serialized
 
 
 @db_api.teardown_request

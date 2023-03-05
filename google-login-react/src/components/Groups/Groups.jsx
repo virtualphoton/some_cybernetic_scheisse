@@ -1,90 +1,78 @@
 import React, {useEffect, useState, useRef} from "react";
-import { Table, Tab, Button } from "semantic-ui-react";
+import { Table, Tab, Button, Accordion, Icon, Divider, Header, Container } from "semantic-ui-react";
 import { callApiInto } from "../../utils";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 
-function Group(prop) {
-  return (
-    <Table.Row>
-        <Table.Cell>{prop.name}</Table.Cell>
-    </Table.Row>
-  )
-}
+import { renderList } from "./GroupModification";
 
-function GroupsICreated() {
+function Groups() {
   const [groups, setGroups] = useState([]);
+  const [machines, setMachines] = useState([]);
+  const [cameras, setCameras] = useState([]);
   
   useEffect(callApiInto("list_groups", setGroups), []);
+  useEffect(callApiInto("list_resources", setMachines, {resource_type: "machine"}), []);
+  useEffect(callApiInto("list_resources", setCameras, {resource_type: "camera"}), []);
   
+  const nav = useNavigate();
   
-  let table = <></>;
-  if (groups.length) {
-    table = (
-      <Table selectable>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Name</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        
-        <Table.Body>
-          {groups.map(user =>
-            <Group
-              key={user.email}
-              username={user.username}
-              email={user.email}
-              role={user.role}
-            />
-          )}
-        </Table.Body>
-      </Table>
-    );
-  }
+  const [activeIndex, setActiveIndex] = useState([]);
+  const handleClick = (_, {index}) => setActiveIndex(activeIndex === index? -1 : index)
+  
+  let accordion = (
+    <Accordion fluid styled>
+      {groups.map(group =>
+        <div key={group.id}>
+          <Accordion.Title active={activeIndex === group.id}
+                           index={group.id}
+                           onClick={handleClick}
+          >
+            <Accordion.Content>
+              <Icon name='dropdown' />
+              {group.name}
+              
+              <Button positive
+                      content="connect"
+                      floated="right"
+              />
+              <Button primary
+                      icon="settings"
+                      floated="right"
+                      onClick={() => nav(`/modifygroup?group_id=${group.id}`)}
+              />
+            </Accordion.Content>
+          </Accordion.Title>
+          
+          <Accordion.Content active={activeIndex === group.id}>
+          <Header as='h4' content="Description"/>
+          <p>{group.description}</p>
+          <Divider hidden />
+
+          <Header as='h4' content="Cameras"/>
+          {renderList(cameras.filter(camera => group.cameras.includes(camera.id)),
+                      camera => `${camera.name} (connection type: ${camera.connection})`)}
+          <Divider hidden/>
+
+          <Header as='h4' content="Machines"/>
+          {renderList(machines.filter(machine => group.cameras.includes(machine.id)),
+                      machine => `${machine.name} (aruco: ${machine.aruco_id})`)}
+          </Accordion.Content>
+        </div>
+      )}
+    </Accordion>
+  );
   
   return (
     <>
-    { table }
-    <Button positive icon="plus"
-            href="/modifygroup"/>
+    { accordion }
+    <Container textAlign='center'>
+    <Button positive
+            icon="plus"
+            
+            onClick={() => nav("/modifygroup")}/>
+    </Container>
     </>
   )
-}
-
-function GroupsIAmIn() {
-  const [groups, setGroups] = useState([])
-  
-  useEffect(callApiInto("list_groups_i_am_in", setGroups), []);
-  
-  return (
-    <Table>
-      <Table.Header>
-        <Table.Row>
-          <Table.HeaderCell>Name</Table.HeaderCell>
-        </Table.Row>
-      </Table.Header>
-      
-      <Table.Body>
-        {groups.map(user =>
-          <Group
-            key={user.email}
-            username={user.username}
-            email={user.email}
-            role={user.role}
-          />
-        )}
-      </Table.Body>
-    </Table>
-  )
-}
-
-function Groups() {
-  let groupsIAmIn = GroupsIAmIn();
-  let groupsICreated = GroupsICreated();
-  const panes = [
-    { menuItem: 'Groups I am in', render: () => <Tab.Pane>{groupsIAmIn}</Tab.Pane>},
-    { menuItem: 'Groups I created', render: () => <Tab.Pane>{groupsICreated}</Tab.Pane> },
-  ]
-  return <Tab panes={panes} />
 }
 
 export default Groups;

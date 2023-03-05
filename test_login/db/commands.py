@@ -41,23 +41,25 @@ def delete_self_from_group(user_id, group_id):
 def delete_resource(user_id, table, delete_id):
     return delete_factory(UserRole.admin, table)(user_id=user_id, delete_id=delete_id)
 
-@test_role(UserRole.admin, pass_id=False)
+@test_role(UserRole.admin)
 def get_group(group_id):
     return find_by_id(Group, group_id)
 
-@test_role(UserRole.admin)
+@test_role(UserRole.admin, pass_id=True)
 def modify_group(user_id, group_id, **params):
     from_ids = {"machines": Machine, "cameras": Camera, "users": User}
     if group_id is None:
-        add_new_factory(UserRole.admin, Group, from_ids)\
-            (user_id=user_id, **params)
+        group = add_new_factory(UserRole.admin, Group, from_ids)\
+                    (user_id=user_id, **params)
+        
     else:
         group = find_by_id(Group, group_id)
         for field, new_val in params.items():
             if field in from_ids:
                 new_val = find_by_id(from_ids[field], new_val)
             setattr(group, field, new_val)
-    
+    db.session.commit()
+    return group
 
 API_COMMANDS = {
     "add_command": add_new_factory(UserRole.admin, Command, {"machine": Machine}),
@@ -71,7 +73,6 @@ API_COMMANDS = {
     "list_users": list_command_factory(UserRole.admin, User, return_all=True),
     "get_my_user": lambda user_id: find_by_id(User, user_id),
     "delete_user_account": delete_factory(UserRole.admin, User),
-    "delete_my_account": lambda user_id: delete_factory(UserRole.guest, User)(user_id=user_id, delete_id=user_id),
     
     "list_groups": list_command_factory(UserRole.admin, Group, return_all=True),
     "get_group": get_group,

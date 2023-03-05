@@ -12,8 +12,8 @@ SERIALIZATION_FIELDS = {
     "machine": Serializer(["id", "name", "url", "js_path", "aruco_id"], ["commands"]),
     "command": Serializer(["id", "name", "machine_id"]),
     "camera": Serializer(["id", "name", "address", "res_x", "res_y"], ["groups"], ["connection"]),
-    "user": Serializer(["id", "username", "email"], ["cameras", "machines", "groups_member"], ["role"]),
-    "group": Serializer(["id", "name"], ["cameras", "machines", "users"]),
+    "user": Serializer(["id", "username", "email"], ["groups_member"], ["role"]),
+    "group": Serializer(["id", "name", "description"], ["cameras", "machines", "users"]),
 }
 
 def serialize_table(obj):

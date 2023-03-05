@@ -1,5 +1,5 @@
 import Axios from "axios";
-import React, { Fragment, useEffect, useState } from "react";
+import React, {useEffect } from "react";
 import { Routes, Route, useLocation} from "react-router-dom";
 import { useNavigate } from "react-router";
 
@@ -11,7 +11,6 @@ import TopMenu from "./TopMenu";
 import Users from "./components/Users";
 
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-console.log(BACKEND_URL)
 
 function App() {
   const location = useLocation();
