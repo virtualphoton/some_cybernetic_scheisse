@@ -108,7 +108,7 @@ function DescriptionTab(groupReceived) {
 
 export default function ModifyGroup() {
   const [group, setGroup] = useState({id: null, name: "", description: "",
-                                      cameras: [], machine_specs: [], users: []})
+                                      cameras: [], machines: [], users: []})
   const query = new URLSearchParams(window.location.search);
   let group_id = query.get("group_id");
   let caller = () => null;
@@ -121,7 +121,7 @@ export default function ModifyGroup() {
   
   const [machinesTab, machines] = AppendableList(
     setter => callApiInto("list_resources", setter, {resource_type: "machine"}),
-    group.machine_specs,
+    group.machines,
     machine => `${machine.name} (aruco: ${machine.aruco_id})`
   )
   const [camerasTab, cameras] = AppendableList(

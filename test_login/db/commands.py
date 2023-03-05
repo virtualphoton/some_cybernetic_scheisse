@@ -41,9 +41,15 @@ def delete_self_from_group(user_id, group_id):
 def delete_resource(user_id, table, delete_id):
     return delete_factory(UserRole.admin, table)(user_id=user_id, delete_id=delete_id)
 
-@test_role(UserRole.admin)
+@test_role(UserRole.user)
 def get_group(group_id):
     return find_by_id(Group, group_id)
+
+@test_role(UserRole.user)
+@pass_resource
+def get_resources(user_id, table, res_ids):
+    return find_by_id(table, res_ids)
+    
 
 @test_role(UserRole.admin, pass_id=True)
 def modify_group(user_id, group_id, **params):
