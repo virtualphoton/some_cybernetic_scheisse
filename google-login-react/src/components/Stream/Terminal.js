@@ -3,13 +3,27 @@ import { Dropdown } from 'semantic-ui-react';
 import React, { useState, useRef, useEffect } from 'react';
 import Axios from "axios";
 
-const LOCAL_STORAGE_TERMINAL_KEY = 'someApp.terminal'
+import { BACKEND_URL } from "../../App";
+import { config } from "../../utils";
+
 const default_commands = {
   cd: (directory, dir2) => `changed path to ${directory}, ${dir2}`
 };
 
-function CommandSender(terminal, command, args) {
-  return command;
+function CommandSender(machine_id, command, args) {
+  let ret;
+  const query = new URLSearchParams(window.location.search);
+  let group_id = query.get("group_id");
+  
+  Axios.post(
+    `${BACKEND_URL}/machine_commands`, {
+      "group_id": group_id, "machine_id": machine_id,
+      "command": command, "args": args
+    }, config()
+  ).then(response => {ret = response.data.msg; console.log(ret)}).catch(
+    err => {ret = err.data}
+  );
+  return ret;
 }
 
 function MachineSelector(machines) {
@@ -44,7 +58,7 @@ function Terminal(machines) {
       (obj[machine.id] = 
         <ReactTerminal
           prompt={`${machine.id}$`}
-          defaultHandler={(...args) => CommandSender(terminals[machine.id], ...args)}
+          defaultHandler={(command, ...args) => CommandSender(machine.id, command, ...args)}
           commands={default_commands}
         />, obj), {})
     )

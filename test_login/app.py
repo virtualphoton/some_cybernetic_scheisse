@@ -6,7 +6,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from .extensions import db
-from .routes import db_api, auth, streaming
+from .routes import db_api, auth, streaming, machines
 
 env_vars = dotenv_values(Path(__file__).parent / ".env" )
 BACKEND_URL = env_vars["BACKEND_URL"]
@@ -29,6 +29,7 @@ def create_app():
     
     app.register_blueprint(db_api)
     app.register_blueprint(streaming)
+    app.register_blueprint(machines)
     app.register_blueprint(auth)
     
     return app

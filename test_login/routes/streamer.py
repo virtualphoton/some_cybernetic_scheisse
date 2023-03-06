@@ -1,10 +1,7 @@
 import time
 
-from flask import Blueprint, Response, jsonify
-from flask_cors import CORS, cross_origin
-
+from flask import Blueprint, Response
 streaming = Blueprint('streaming', __name__)
-cors = CORS(streaming, resources=r"/video_feed")
 
 class Camera(object):
     def __init__(self, cam_id):
@@ -22,8 +19,7 @@ class Camera(object):
 
 
 def gen(camera):
-    for _ in range(100):
-        
+    while True:
         frame = camera.get_frame()
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
@@ -33,7 +29,3 @@ def video_feed(cam_id):
     return Response(gen(Camera(cam_id)),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-@streaming.route("/t", methods=['GET', "POST"])
-@cross_origin(supports_credentials=True)
-def login():
-  return jsonify({'success': 'ok'})

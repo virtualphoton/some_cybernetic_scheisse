@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {TerminalContextProvider} from "react-terminal";
-import Machines from "./Machines";
 import Terminal from "./Terminal";
 import styled from "styled-components";
 
@@ -43,7 +42,6 @@ export default function Stream() {
     <TerminalContextProvider>
       <Flexed>
         {Cam(cameras)}
-        {Machines(machines)}
       </Flexed>
       
       {Terminal(machines)}
