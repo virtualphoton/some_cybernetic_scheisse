@@ -33,7 +33,7 @@ class DummyMachine(MachineBase):
     
     def run(self, command, args):
         if command == "help":
-            msg = "ping\nhelp\ninc"
+            msg = "ping, help, inc <n>"
         elif command == "ping":
             msg = "pong"
         elif command == "inc":
