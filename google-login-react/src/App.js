@@ -10,6 +10,8 @@ import Signin from "./components/SignIn/Signin";
 import TopMenu from "./TopMenu";
 import Users from "./components/Users";
 import Console from "./components/Console";
+import Stream from "./components/Stream/Main";
+import Resources from "./components/Resources";
 
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -60,6 +62,8 @@ function App() {
         <Route exact path="/groups" element={<Groups/>} />
         <Route exact path="/modifygroup" element={<GroupModification/>} />
         <Route exact path="/console" element={<Console/>} />
+        <Route exact path="/stream" element={<Stream/>} />
+        <Route exact path="/resources" element={<Resources/>} />
         <Route exact path="/"/>
       </Routes>
     </>
