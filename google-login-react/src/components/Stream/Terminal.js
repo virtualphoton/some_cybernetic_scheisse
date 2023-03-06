@@ -10,8 +10,7 @@ const default_commands = {
   cd: (directory, dir2) => `changed path to ${directory}, ${dir2}`
 };
 
-function CommandSender(machine_id, command, args) {
-  let ret;
+function CommandSender(setResult, machine_id, command, args) {
   const query = new URLSearchParams(window.location.search);
   let group_id = query.get("group_id");
   
@@ -20,10 +19,9 @@ function CommandSender(machine_id, command, args) {
       "group_id": group_id, "machine_id": machine_id,
       "command": command, "args": args
     }, config()
-  ).then(response => {ret = response.data.msg; console.log(ret)}).catch(
-    err => {ret = err.data}
+  ).then(response => {setResult(JSON.stringify(response.data.msg, null, 2));}).catch(
+    err => {setResult(JSON.stringify(err.data, null, 2))}
   );
-  return ret;
 }
 
 function MachineSelector(machines) {
@@ -49,6 +47,7 @@ function MachineSelector(machines) {
 
 
 function Terminal(machines) {
+  const [result, setResult] = useState("");
   const [terminals, setTerminals] = useState([]);
   const [machineSelector, machine] = MachineSelector(machines);
   
@@ -58,7 +57,7 @@ function Terminal(machines) {
       (obj[machine.id] = 
         <ReactTerminal
           prompt={`${machine.id}$`}
-          defaultHandler={(command, ...args) => CommandSender(machine.id, command, ...args)}
+          defaultHandler={(command, ...args) => CommandSender(setResult, machine.id, command, ...args)}
           commands={default_commands}
         />, obj), {})
     )
@@ -68,6 +67,7 @@ function Terminal(machines) {
     <div>
       {machineSelector}
       {terminals[machine.id]}
+      <p>{result}</p>
     </div>
   )
 }

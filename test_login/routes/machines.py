@@ -36,8 +36,8 @@ class DummyMachine(MachineBase):
             msg = "ping\nhelp\ninc"
         elif command == "ping":
             msg = "pong"
-        elif command == "inc <number>":
-            self.counter += args[0]
+        elif command == "inc":
+            self.counter += int(args[0])
             msg = list(range(self.counter))
         else:
             msg = "Unknown command, type `help` to get list of commands"
