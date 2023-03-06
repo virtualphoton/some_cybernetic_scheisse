@@ -72,7 +72,7 @@ function AppendableList(retrieve_all, selected_ids_sent, repr) {
               value={""}
               options={unselectedList}
               onChange={(_, {value}) => 
-              setSelected([...selected, all.find(item => item.id === value)])}
+                setSelected([...selected, all.find(item => item.id === value)])}
     />
     </>
   ), selected];

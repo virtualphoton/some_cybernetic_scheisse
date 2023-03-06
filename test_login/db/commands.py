@@ -47,7 +47,7 @@ def get_group(group_id):
 
 @test_role(UserRole.user)
 @pass_resource
-def get_resources(user_id, table, res_ids):
+def get_resources(table, res_ids):
     return find_by_id(table, res_ids)
     
 
@@ -74,6 +74,7 @@ API_COMMANDS = {
     
     "add_resource": add_resource,
     "list_resources": list_resources,
+    "get_resources": get_resources,
     "delete_resource": delete_resource,
     
     "list_users": list_command_factory(UserRole.admin, User, return_all=True),

@@ -34,6 +34,7 @@ function Groups() {
               <Button positive
                       content="connect"
                       floated="right"
+                      onClick={() => nav(`/stream?group_id=${group.id}`)}
               />
               <Button primary
                       icon="settings"
@@ -54,7 +55,7 @@ function Groups() {
           <Divider hidden/>
 
           <Header as='h4' content="Machines"/>
-          {renderList(machines.filter(machine => group.cameras.includes(machine.id)),
+          {renderList(machines.filter(machine => group.machines.includes(machine.id)),
                       machine => `${machine.name} (aruco: ${machine.aruco_id})`)}
           </Accordion.Content>
         </div>

@@ -48,6 +48,7 @@ PARAMETERS = {
     "add_resource": check_add_resource_params,
     "list_resources": Params({"resource_type"}),
     "delete_resource": Params({"resource_type", "delete_id"}),
+    "get_resources": Params({"resource_type", "res_ids"}),
     
     "add_command": Params({"machine", "name"}),
     "list_commands": simple_list_params,

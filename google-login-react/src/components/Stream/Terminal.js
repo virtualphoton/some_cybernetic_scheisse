@@ -1,4 +1,5 @@
 import { ReactTerminal } from "react-terminal";
+import { Dropdown } from 'semantic-ui-react';
 import React, { useState, useRef, useEffect } from 'react';
 import Axios from "axios";
 
@@ -12,37 +13,30 @@ function CommandSender(terminal, command, args) {
 }
 
 function MachineSelector(machines) {
-  const [selected, setSelected] = useState({id:-1, name:""});
-  
-  useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem(LOCAL_STORAGE_TERMINAL_KEY))
-    if (storedTodos) setActiveTerm(storedTodos)
-  }, []);
-  useEffect(() => {
-    localStorage.setItem(LOCAL_STORAGE_TERMINAL_KEY, JSON.stringify(activeTerm))
-  }, [activeTerm]);
-
-  
+  const [selected, setSelected] = useState({name : "", id : -1});
+  useEffect(
+    () => {
+      if (machines.length)
+        setSelected(machines[0]);
+    },
+    [machines]
+  );
+  //onChange={(_, {value}) => setSelected(cameras.find(camera => camera.id === value))}
+  let choice = machines.map(machine => {return {key: machine.id, value: machine.id, text: machine.name}});
   return [(
-    <Dropdown text={selected.name}
+    <Dropdown selection
               value={selected.id}
-              onChange={(_, {value}) => setSelected(machines.find(machine => machine.id === value))}>
-                
-      <Dropdown.Menu>
-        {machines.map(machine =>
-          <Dropdown.Item text={machine.name} key={machine.id}/>
-        )}
-      </Dropdown.Menu>
-    </Dropdown>
-  ), selected];
+              text={selected.name}
+              onChange={(_, {value}) => {setSelected(machines.find(machine => machine.id === value))}}
+              options={choice}
+              />
+  ), selected]
 }
 
 
 function Terminal(machines) {
-  let machines = prop.machines;
-  
   const [terminals, setTerminals] = useState([]);
-  const [machineSelector, machine] = MachineSelector(cameras);
+  const [machineSelector, machine] = MachineSelector(machines);
   
   // build dict: machine.id -> terminal
   useEffect(() => {
@@ -50,7 +44,7 @@ function Terminal(machines) {
       (obj[machine.id] = 
         <ReactTerminal
           prompt={`${machine.id}$`}
-          defaultHandler={(...args) => CommandSender(terminals[activeTerm], ...args)}
+          defaultHandler={(...args) => CommandSender(terminals[machine.id], ...args)}
           commands={default_commands}
         />, obj), {})
     )

@@ -22,6 +22,8 @@ function Users() {
   }, []);
   
   return (
+    <>
+    <h3>Users</h3>
     <Table celled>
       <Table.Header>
         <Table.Row>
@@ -42,6 +44,7 @@ function Users() {
         )}
       </Table.Body>
     </Table>
+    </>
   );
 }
 

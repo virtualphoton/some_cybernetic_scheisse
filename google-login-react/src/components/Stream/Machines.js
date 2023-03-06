@@ -44,9 +44,7 @@ function MachineButton(prop) {
 }
 
 
-function Machines(prop) {
-  let machines = prop.machines;
-
+function Machines(machines) {
   return (
     <div>
       {machines.map(machine =>

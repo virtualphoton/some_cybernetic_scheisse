@@ -1,15 +1,18 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import {TerminalContextProvider} from "react-terminal";
 import Machines from "./Machines";
 import Terminal from "./Terminal";
 import styled from "styled-components";
+
+import { callApiInto } from '../../utils';
+import Cam from './Cameras';
 
 const Flexed = styled.div`
   display: flex;
   justify-content: flex-start;
 `
 
-function Main() {
+export default function Stream() {
   const [group, setGroup] = useState({id: null, name: "", description: "",
                                       cameras: [], machines: []});
   //{id: null, name: "", res_x: 0, res_y: 0}
@@ -39,13 +42,11 @@ function Main() {
   return (
     <TerminalContextProvider>
       <Flexed>
-        <Cameras cameras={cameras}/>
-        <Machines machines={machines}/>
+        {Cam(cameras)}
+        {Machines(machines)}
       </Flexed>
       
-      <Terminal/>
+      {Terminal(machines)}
     </TerminalContextProvider>
   )
 }
-
-export default Main;
