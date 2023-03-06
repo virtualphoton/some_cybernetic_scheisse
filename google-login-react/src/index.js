@@ -3,6 +3,15 @@ import {BrowserRouter } from "react-router-dom";
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { useNavigate } from 'react-router-dom';
+
+import History from './History';
+
+const NavigateSetter = () => {
+  History.navigate = useNavigate();
+
+  return null;
+};
 
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
@@ -11,6 +20,7 @@ document.head.appendChild(styleLink);
 
 ReactDOM.render(
     <BrowserRouter>
+      <NavigateSetter />
       <App />
     </BrowserRouter>,
   document.getElementById("root")

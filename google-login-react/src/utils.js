@@ -1,5 +1,6 @@
 import Axios from "axios";
 import { BACKEND_URL } from "./App";
+import { handleLogout } from "./components/SignIn/Signin";
 
 export function config() {
   return {"headers" : {
@@ -15,7 +16,13 @@ export function callDbApi(func, data={}) {
 }
 
 export function callApiInto(method, setState, data={}) {
-  return () => callDbApi(method, data).then(response => setState(response.data)).catch(err => console.log(err));
+  return () => callDbApi(method, data).then(response => setState(response.data)).catch(
+    err => {
+      if (err.response.status == 401) {
+        handleLogout();
+      }
+    }
+  );
 }
 
 export function isAdmin() {

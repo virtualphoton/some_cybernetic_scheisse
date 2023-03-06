@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router";
+import History from "../../History";
 
-export function handleLogout(nav) {
+export function handleLogout() {
   localStorage.removeItem('JWT')
   localStorage.removeItem('role')
-  return nav("/login")
+  return History.navigate("/login")
 }
 
 function SignIn(props) {

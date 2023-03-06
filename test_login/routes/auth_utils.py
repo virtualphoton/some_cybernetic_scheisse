@@ -23,8 +23,8 @@ def login_required(func):
             decoded_jwt = jwt.decode(encoded_jwt, current_app.secret_key, algorithms=[ALGORITHM])
         except Exception as e: 
             return Response(
-                response=json.dumps({"message":"Decoding JWT Failed", "exception":e.args}),
-                status=500,
+                response=json.dumps({"message":"Decoding JWT Failed", "exception": e.args}),
+                status=401,
                 mimetype="application/json"
             )
         

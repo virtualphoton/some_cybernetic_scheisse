@@ -26,7 +26,7 @@ export default function LoggedIn() {
       <img src={auth ? auth["picture"]:""} alt="Profile picture" />
       <h1>Hello {auth ? auth["name"]:""}, Welcome to Skionetizy</h1>
       <h2>Email: {auth ? auth["email"]:""}</h2>
-      <button onClick={() => handleLogout(nav)}>Logout</button>
+      <button onClick={() => handleLogout()}>Logout</button>
     </div>
   );
 }

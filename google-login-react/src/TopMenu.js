@@ -37,7 +37,7 @@ export default function TopMenu(prop) {
       {admin_panel}
                  
       <Menu.Item position="right">
-        <Button onClick={() => handleLogout(nav)}>Log out</Button>
+        <Button onClick={() => handleLogout()}>Log out</Button>
       </Menu.Item>
     </Menu>
   )
