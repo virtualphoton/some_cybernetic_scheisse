@@ -32,7 +32,6 @@ flow = Flow.from_client_secrets_file(
     redirect_uri=f"{BACKEND_URL}/auth/callback",
 )
 
-@auth.route("home")
 
 @auth.route("/auth/callback")
 def callback():
