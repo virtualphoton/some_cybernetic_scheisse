@@ -14,6 +14,8 @@ BACKEND_URL = env_vars["BACKEND_URL"]
 DB_PATH = env_vars["DB_PATH"]
 SECRET_KEY = env_vars["SECRET_KEY"]
 
+
+
 def create_app():
     app = Flask(__name__)
     
@@ -34,7 +36,6 @@ def create_app():
     app.register_blueprint(auth)
     
     return app
-
 
 def create_db():
     app = create_app()

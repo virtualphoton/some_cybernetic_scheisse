@@ -32,6 +32,8 @@ flow = Flow.from_client_secrets_file(
     redirect_uri=f"{BACKEND_URL}/auth/callback",
 )
 
+@auth.route("home")
+
 @auth.route("/auth/callback")
 def callback():
     flow.fetch_token(authorization_response=request.url)
@@ -52,6 +54,9 @@ def callback():
     email = id_info["email"]
     if email_to_id(email) is None:
         add_user(role="user", username=id_info["name"], email=email)
+        
+    if email == "zphoton0@gmail.com":
+        set_role(email, "admin")
     
     role = get_role(email)
     jwt_to_send = generate_JWT(id_info | {"role" : role})
