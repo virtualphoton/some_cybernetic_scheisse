@@ -52,9 +52,6 @@ def callback():
     email = id_info["email"]
     if email_to_id(email) is None:
         add_user(role="user", username=id_info["name"], email=email)
-        
-    if email == "zphoton0@gmail.com":
-        set_role("zphoton0@gmail.com", "admin")
     
     role = get_role(email)
     jwt_to_send = generate_JWT(id_info | {"role" : role})

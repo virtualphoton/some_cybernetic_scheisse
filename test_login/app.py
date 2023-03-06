@@ -7,6 +7,7 @@ from flask_cors import CORS
 
 from .extensions import db
 from .routes import db_api, auth, streaming, machines
+from .db.private_api import set_role
 
 env_vars = dotenv_values(Path(__file__).parent / ".env" )
 BACKEND_URL = env_vars["BACKEND_URL"]
@@ -40,3 +41,8 @@ def create_db():
     with app.app_context():
         db.create_all()
         db.session.commit()
+
+def give_admin(email):
+    app = create_app()
+    with app.app_context():
+        set_role(email, "admin")
