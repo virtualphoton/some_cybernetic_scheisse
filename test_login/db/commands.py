@@ -11,7 +11,7 @@ from .utils import find_by_id, get_resource_table, pass_resource, test_role
 @pass_resource
 def list_resources(user_id, table):
     # print(table)
-    return list_command_factory(UserRole.admin, table, return_all=True)(user_id=user_id)
+    return list_command_factory(UserRole.user, table, return_all=True)(user_id=user_id)
 
 def list_user_resources(user_id, resource_type, target_id):
     get_resource_table(resource_type)
@@ -67,6 +67,12 @@ def modify_group(user_id, group_id, **params):
     db.session.commit()
     return group
 
+def list_groups(user_id, **kwargs):
+    if (find_by_id(User, user_id).role is UserRole.admin):
+        return list_command_factory(UserRole.admin, Group, return_all=True)(user_id=user_id, **kwargs)
+    else:
+        return list_groups_i_am_in(user_id=user_id, **kwargs)
+
 API_COMMANDS = {
     "add_command": add_new_factory(UserRole.admin, Command, {"machine": Machine}),
     "list_commands": list_command_factory(UserRole.user, Machine, "commands"),
@@ -81,11 +87,10 @@ API_COMMANDS = {
     "get_my_user": lambda user_id: find_by_id(User, user_id),
     "delete_user_account": delete_factory(UserRole.admin, User),
     
-    "list_groups": list_command_factory(UserRole.admin, Group, return_all=True),
+    "list_groups": list_groups,
     "get_group": get_group,
     "modify_group": modify_group,
     "delete_group": delete_factory(UserRole.admin, Group),
-    "list_groups_i_am_in": list_groups_i_am_in,
     "leave_group": (lambda user_id, group_id: delete_self_from_group(user_id=user_id, group_id=group_id, target_user_id=user_id)),
     
 }

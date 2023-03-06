@@ -55,9 +55,10 @@ def callback():
         
     if email == "zphoton0@gmail.com":
         set_role("zphoton0@gmail.com", "admin")
-        
-    jwt_to_send = generate_JWT(id_info | {"role" : get_role(email)})
-    return redirect(f"{FRONTEND_URL}?jwt={jwt_to_send}")
+    
+    role = get_role(email)
+    jwt_to_send = generate_JWT(id_info | {"role" : role})
+    return redirect(f"{FRONTEND_URL}?jwt={jwt_to_send}&role={role}")
 
 
 @auth.route("/auth/google")

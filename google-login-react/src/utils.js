@@ -17,3 +17,11 @@ export function callDbApi(func, data={}) {
 export function callApiInto(method, setState, data={}) {
   return () => callDbApi(method, data).then(response => setState(response.data)).catch(err => console.log(err));
 }
+
+export function isAdmin() {
+  return isLoggedIn && localStorage.getItem('role') == "admin";
+}
+
+export function isLoggedIn() {
+  return localStorage.getItem('JWT') !== null;
+}

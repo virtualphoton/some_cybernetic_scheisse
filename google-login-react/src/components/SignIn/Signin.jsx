@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 
 export function handleLogout(nav) {
   localStorage.removeItem('JWT')
+  localStorage.removeItem('role')
   return nav("/login")
 }
 

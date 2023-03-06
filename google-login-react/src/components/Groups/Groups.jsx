@@ -1,9 +1,35 @@
 import React, {useEffect, useState, useRef} from "react";
 import { Table, Tab, Button, Accordion, Icon, Divider, Header, Container } from "semantic-ui-react";
-import { callApiInto } from "../../utils";
+import { callApiInto, isAdmin } from "../../utils";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 
 import { renderList } from "./GroupModification";
+
+function groupButton(group, nav) {
+  if (isAdmin()) {
+    return (
+      <>
+        <Button primary
+                icon="settings"
+                floated="right"
+                onClick={() => nav(`/modifygroup?group_id=${group.id}`)}
+        />
+      </>
+    )
+  }
+  
+  return <></>
+}
+function addButton(nav) {
+  if (isAdmin()) {
+    return (
+     <Button positive
+             icon="plus"
+             onClick={() => nav("/modifygroup")}/>
+    )
+  }
+  return <></>
+}
 
 function Groups() {
   const [groups, setGroups] = useState([]);
@@ -30,17 +56,12 @@ function Groups() {
             <Accordion.Content>
               <Icon name='dropdown' />
               {group.name}
-              
               <Button positive
                       content="connect"
                       floated="right"
                       onClick={() => nav(`/stream?group_id=${group.id}`)}
               />
-              <Button primary
-                      icon="settings"
-                      floated="right"
-                      onClick={() => nav(`/modifygroup?group_id=${group.id}`)}
-              />
+              {groupButton(group, nav)}
             </Accordion.Content>
           </Accordion.Title>
           
@@ -67,10 +88,7 @@ function Groups() {
     <>
     { accordion }
     <Container textAlign='center'>
-    <Button positive
-            icon="plus"
-            
-            onClick={() => nav("/modifygroup")}/>
+    {addButton(nav)}
     </Container>
     </>
   )

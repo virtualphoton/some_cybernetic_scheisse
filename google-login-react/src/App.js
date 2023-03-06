@@ -5,15 +5,17 @@ import { useNavigate } from "react-router";
 
 import Groups from "./components/Groups/Groups";
 import GroupModification from "./components/Groups/GroupModification";
-import Loggedin from "./components/Loggedin";
 import Signin from "./components/SignIn/Signin";
 import TopMenu from "./TopMenu";
 import Users from "./components/Users";
 import Console from "./components/Console";
 import Stream from "./components/Stream/Main";
 import Resources from "./components/Resources";
+import { isAdmin, isLoggedIn } from "./utils";
 
 export const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+const allowedForUser = ["login", "groups"]
 
 function App() {
   const location = useLocation();
@@ -38,18 +40,30 @@ function App() {
       // get `jwt` param from url address after redirection
       const query = new URLSearchParams(window.location.search);
       const token = query.get('jwt')
+      const role = query.get('role')
       if (token) {
         localStorage.setItem('JWT', token);
-        return nav('/home')
+        localStorage.setItem('role', role);
+        return nav('/groups')
       } else if (location.pathname != "/login") {
         return nav('/login');
       }
     }
-  })
-
+    if (isLoggedIn() && !isAdmin() && !allowedForUser.includes(location.pathname)) {
+      return nav('/groups');
+    }
+  }, [])
+  
+  let topMenu;
+  if (isLoggedIn()) {
+    topMenu = <TopMenu path={location.pathname}/>
+  } else {
+    topMenu = <></>
+  }
+  
   return (
     <>
-      <TopMenu path={location.pathname}/>
+      {topMenu}
       
       <Routes>
         <Route
@@ -57,9 +71,9 @@ function App() {
           path="/login"
           element={<Signin login={handleClick}></Signin>}
         />
-        <Route exact path="/home" element={<Loggedin></Loggedin>} />
-        <Route exact path="/users" element={<Users/>} />
         <Route exact path="/groups" element={<Groups/>} />
+        
+        <Route exact path="/users" element={<Users/>} />
         <Route exact path="/modifygroup" element={<GroupModification/>} />
         <Route exact path="/console" element={<Console/>} />
         <Route exact path="/stream" element={<Stream/>} />
