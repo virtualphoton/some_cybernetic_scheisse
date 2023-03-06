@@ -4,6 +4,7 @@ import { callApiInto, isAdmin } from "../../utils";
 import { Link, useLocation, useNavigate} from "react-router-dom";
 
 import { renderList } from "./GroupModification";
+import {callDbApi} from "../../utils"
 
 function groupButton(group, nav) {
   if (isAdmin()) {
@@ -14,6 +15,10 @@ function groupButton(group, nav) {
                 floated="right"
                 onClick={() => nav(`/modifygroup?group_id=${group.id}`)}
         />
+        <Button negative
+                floated="right"
+                icon="trash"
+                onClick={() => callDbApi("delete_group", {"delete_id": group.id}).then(() => window.location.reload())}/>
       </>
     )
   }
@@ -22,10 +27,11 @@ function groupButton(group, nav) {
 }
 function addButton(nav) {
   if (isAdmin()) {
-    return (
+    return (<>
      <Button positive
              icon="plus"
              onClick={() => nav("/modifygroup")}/>
+             </>
     )
   }
   return <></>

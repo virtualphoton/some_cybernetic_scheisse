@@ -39,6 +39,45 @@ export function renderList(items, repr, additionalContent = null) {
   )
 }
 
+function SimpleSelect(retrieve_all, selected_ids_sent, repr) {
+  const [all, setAll] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [unselectedList, setUnselected] = useState([]);
+  
+  useEffect(retrieve_all(setAll), []);
+  useEffect(() => setSelected(all.filter(item => selected_ids_sent.includes(item.id))), [all, selected_ids_sent]);
+  useEffect(() => {
+    let used_ids = selected.map(item => item.id);
+    let unselected = all.filter(item => !used_ids.includes(item.id))
+    setUnselected(unselected.map(
+      item => {return {key: item.id, value: item.id, text: repr(item)}}
+    ));
+  }, [selected]);
+  
+  function deleter(id) {
+    return () => setSelected(selected.filter(item => item.id !== id));
+  }
+  
+  return [(
+    <>
+    {renderList(selected, repr, (item) =>
+      <Button negative
+              icon="close"
+              onClick={deleter(item.id)}
+      />
+    )}
+    
+    <Dropdown placeholder='Add new (Esc, to close selection)'
+              search selection
+              value={""}
+              options={unselectedList}
+              onChange={(_, {value}) => 
+                setSelected([all.find(item => item.id === value)])}
+    />
+    </>
+  ), selected];
+}
+
 function AppendableList(retrieve_all, selected_ids_sent, repr) {
   const [all, setAll] = useState([]);
   const [selected, setSelected] = useState([]);
@@ -124,7 +163,7 @@ export default function ModifyGroup() {
     group.machines,
     machine => `${machine.name} (aruco: ${machine.aruco_id})`
   )
-  const [camerasTab, cameras] = AppendableList(
+  const [camerasTab, cameras] = SimpleSelect(
     setter => callApiInto("list_resources", setter, {resource_type: "camera"}),
     group.cameras,
     camera => `${camera.name} (connection type: ${camera.connection})`
