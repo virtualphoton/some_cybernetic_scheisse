@@ -4,6 +4,7 @@ import io
 import cv2
 import numpy as np
 import cv2.aruco as aruco
+import os
 
 class Camera:
     QUALITY = 80
@@ -23,7 +24,7 @@ class Camera:
             fov=90.0,
             aspect=1280 / 720,
             nearVal=0.1,
-            farVal=100
+            farVal=10
         )
         self.captured_images = []
         
@@ -38,11 +39,12 @@ class Camera:
     def set_pos(self, pos, up_vector, direction):
         pos = np.array(pos)
         up = np.cross(np.cross(direction, up_vector), direction)
+        direction = np.array(direction)
         
         self.viewMatrix = pb.computeViewMatrix(
             cameraEyePosition=pos,
-            cameraTargetPosition=pos + direction,
-            cameraUpVector=up_vector
+            cameraTargetPosition=pos + direction / np.linalg.norm(direction),
+            cameraUpVector=up
         )
 
     def get_frame(self, save=True) -> np.ndarray:
@@ -78,6 +80,15 @@ class Camera:
         )
         self.mtx = mtx
         self.dist = dist
+        print()
+        print(self.mtx, self.dist)
+        print()
+    
+    def save(self, folder):
+        for i, frame in enumerate(self.captured_images):
+            if not os.path.exists(f"./{folder}/"):
+                os.mkdir(f"./{folder}/")
+            cv2.imwrite(f"{folder}/charuco_{i}.png", frame)
     
     def process_charuko(self, frame):
         assert self.mtx is not None and self.dist is not None
@@ -98,17 +109,20 @@ class Camera:
             gray, self.board
         )
         
-        _, rvec, tvec = aruco.estimatePoseCharucoBoard(
+        _, rvec_check, tvec_check = aruco.estimatePoseCharucoBoard(
             corners_checker, ids_checker, 
             self.board, self.mtx, self.dist,
             None, None
         )
         
-        cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.1)
+        cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec_check, tvec_check, 0.1)
+        print(rvec_check, tvec_check)
         aruco.drawDetectedMarkers(frame, corners)
         rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.tile_size / 2, self.mtx, self.dist)
+        print()
+        print(rvecs[0], tvecs[0])
         
         for rvec, tvec in zip(rvecs, tvecs):
-            cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.03)
+            cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.01)
             
-        return frame        
+        return frame, rvec_check, tvec_check
