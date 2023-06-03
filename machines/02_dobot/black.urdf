@@ -1,0 +1,21 @@
+<robot name="magician">
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="m2/black.obj" scale="1 1 1"/>
+            </geometry>
+            
+            <material name="white">
+                <color rgba="1 1 1 1"/>
+                <specular rgb="11 1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="m2/black.obj"/>
+            </geometry>
+        </collision>
+    </link>
+</robot>  
