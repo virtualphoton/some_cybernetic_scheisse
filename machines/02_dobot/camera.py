@@ -26,11 +26,11 @@ class Camera:
             farVal=100
         )
 
-    def set_pos(self, pos, up_vector):
+    def set_pos(self, pos, up_vector, delta):
         pos = np.array(pos)
         self.viewMatrix = pb.computeViewMatrix(
             cameraEyePosition=pos,
-            cameraTargetPosition=pos - [0, .2, 1],
+            cameraTargetPosition=pos + delta,
             cameraUpVector=up_vector
         )
 
@@ -47,6 +47,7 @@ class Camera:
             'renderer': pb.ER_BULLET_HARDWARE_OPENGL
         }
         return pb.getCameraImage(**params)[2]
+    
     
     def get_arucos(self, frame, prt=False):
         frame = frame[:, :, :3].astype(np.uint8)
@@ -83,9 +84,14 @@ class Camera:
             gray,
             board
         )
-        rvec, tvec, _ = aruco.estimatePoseSingleMarkers(corners, 0.05, mtx, dist)
+        res, rvec, tvec = aruco.estimatePoseCharucoBoard(
+            corners_checker, ids_checker, board,
+            mtx, dist,
+            np.zeros(3), np.zeros(3)
+        )
+        
         if prt:
-            rvec, tvec = map(np.squeeze, (rvec, tvec))
+            rvec, tvec = rvec.reshape(1, -1), tvec.reshape(1, -1)
             print(rvec / np.linalg.norm(rvec, axis=1, keepdims=True) * np.sign(rvec[:, :1]))
             print()
             for rvec_ in rvec:
@@ -94,10 +100,14 @@ class Camera:
             print("---------------------------------")
             
             print(tvec)
-            return
-        (rvec-tvec).any()
+            return frame
+        
+        cv2.drawFrameAxes(frame, mtx, dist, rvec, tvec, 0.4)
+        aruco.drawDetectedMarkers(frame, corners)
+        
+        rvec, tvec, _ = aruco.estimatePoseSingleMarkers(corners, 0.2, mtx, dist)
+        
         for i in range(rvec.shape[0]):
             cv2.drawFrameAxes(frame, mtx, dist, rvec[i], tvec[i], 0.03)
-            aruco.drawDetectedMarkers(frame, corners)
             
         return frame        

@@ -69,7 +69,8 @@ print()
 while True:
     cam.set_pos(
         pb.getLinkState(robot, 3)[0],
-        transform_vector(robot, [-1, 0, 0])
+        transform_vector(robot, [-1, 0, 0]),
+        transform_vector(robot, [.1, -1, 0]),
     )
     frame = cam.get_frame()
     img = cam.get_arucos(frame)
