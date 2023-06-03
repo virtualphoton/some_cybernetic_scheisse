@@ -25,16 +25,27 @@ class Camera:
             nearVal=0.1,
             farVal=100
         )
+        self.captured_images = []
+        
+        self.dictionary = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
+        self.parameters =  cv2.aruco.DetectorParameters()
+        self.detector = aruco.ArucoDetector(self.dictionary, self.parameters)
+        self.tile_size = 2 * .2 / 8
+        self.board = aruco.CharucoBoard((8, 8), self.tile_size, self.tile_size / 2, self.dictionary)
+        
+        self.mtx, self.dist = None, None
 
-    def set_pos(self, pos, up_vector, delta):
+    def set_pos(self, pos, up_vector, direction):
         pos = np.array(pos)
+        up = np.cross(np.cross(direction, up_vector), direction)
+        
         self.viewMatrix = pb.computeViewMatrix(
             cameraEyePosition=pos,
-            cameraTargetPosition=pos + delta,
+            cameraTargetPosition=pos + direction,
             cameraUpVector=up_vector
         )
 
-    def get_frame(self) -> np.ndarray:
+    def get_frame(self, save=True) -> np.ndarray:
         """
         returns RGBA array of size (x, y, 4)
         """
@@ -46,68 +57,58 @@ class Camera:
             'projectionMatrix': self.projectionMatrix,
             'renderer': pb.ER_BULLET_HARDWARE_OPENGL
         }
-        return pb.getCameraImage(**params)[2]
+        frame = pb.getCameraImage(**params)[2][:, :, :3].astype(np.uint8)
+        if save:
+            self.captured_images.append(frame)
+        return frame
     
+    def calibrate(self):
+        matched_points = []
+        for image in self.captured_images:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+            cur_corners, cur_ids, _ = self.detector.detectMarkers(image)
+            matched_points.append(list(
+                map(np.squeeze, self.board.matchImagePoints(cur_corners, cur_ids))
+            ))
+        obj_points, img_points = zip(*matched_points)
+
+        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
+            obj_points, img_points, image.shape,
+            None, None
+        )
+        self.mtx = mtx
+        self.dist = dist
     
-    def get_arucos(self, frame, prt=False):
-        frame = frame[:, :, :3].astype(np.uint8)
-        if prt:
-            cv2.imwrite("arucos.png", frame)
-            print(1)
+    def process_charuko(self, frame):
+        assert self.mtx is not None and self.dist is not None
         
-        mtx = np.array([[6.18050259e+05, 0.00000000e+00, 6.39488488e+02],
-        [0.00000000e+00, 6.18050677e+05, 3.59501727e+02],
-        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
-        dist = np.array([[ 8.07480697e-01,  7.50618764e-07, -8.02591978e-05,
-            5.02494853e-05,  5.98330140e-13]])
+        frame = frame.copy()
         
         font = cv2.FONT_HERSHEY_SIMPLEX
-
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         
-        aruco_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
-        board = aruco.CharucoBoard_create(8, 8, .4, .2, aruco_dict)
-        parameters =  aruco.DetectorParameters_create()
-        corners, ids, _ = aruco.detectMarkers(
-            gray,
-            aruco_dict,
-            parameters=parameters
-        )
+        corners, ids, _ = self.detector.detectMarkers(gray)
         
         if ids is None:
             cv2.putText(frame, "No Ids", (0,64), font, 1, (0,255,0),2,cv2.LINE_AA)
             return frame
         
         _, corners_checker, ids_checker = aruco.interpolateCornersCharuco(
-            corners,
-            ids,
-            gray,
-            board
-        )
-        res, rvec, tvec = aruco.estimatePoseCharucoBoard(
-            corners_checker, ids_checker, board,
-            mtx, dist,
-            np.zeros(3), np.zeros(3)
+            corners, ids,
+            gray, self.board
         )
         
-        if prt:
-            rvec, tvec = rvec.reshape(1, -1), tvec.reshape(1, -1)
-            print(rvec / np.linalg.norm(rvec, axis=1, keepdims=True) * np.sign(rvec[:, :1]))
-            print()
-            for rvec_ in rvec:
-                print(cv2.Rodrigues(rvec_)[0])
-                print()
-            print("---------------------------------")
-            
-            print(tvec)
-            return frame
+        _, rvec, tvec = aruco.estimatePoseCharucoBoard(
+            corners_checker, ids_checker, 
+            self.board, self.mtx, self.dist,
+            None, None
+        )
         
-        cv2.drawFrameAxes(frame, mtx, dist, rvec, tvec, 0.4)
+        cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.1)
         aruco.drawDetectedMarkers(frame, corners)
+        rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.tile_size / 2, self.mtx, self.dist)
         
-        rvec, tvec, _ = aruco.estimatePoseSingleMarkers(corners, 0.2, mtx, dist)
-        
-        for i in range(rvec.shape[0]):
-            cv2.drawFrameAxes(frame, mtx, dist, rvec[i], tvec[i], 0.03)
+        for rvec, tvec in zip(rvecs, tvecs):
+            cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.03)
             
         return frame        

@@ -5,6 +5,7 @@ import pybullet as pb
 import pybullet_data as pb_data
 import cv2
 from PIL import Image
+import os
 
 from camera import Camera
 
@@ -38,52 +39,50 @@ robot = pb.loadURDF(
 pb.setTimeStep(0.01)  # no idea what this does
 pb.setRealTimeSimulation(0)  # to iterate normally
 
-def move(robot_id, coords):
+def inv_with_limits(robot_id, delta):
+    base = np.array(pb.getBasePositionAndOrientation(robot)[0])
+    coords = pb.calculateInverseKinematics(robot_id, 3, targetPosition=base + delta)
     coords = np.array(coords)
     coords[3] = coords[2] - coords[1]
+    return coords
 
-    pb.setJointMotorControlArray(
-        robot_id,
-        np.arange(4),
-        targetPositions=coords,
-        controlMode=pb.POSITION_CONTROL
-    )
 
 cam = Camera()
-base = np.array(pb.getBasePositionAndOrientation(robot)[0])
 
 def transform_vector(robot_id, vec):
     vec = np.array(vec)
     rot = np.array(pb.getMatrixFromQuaternion(pb.getLinkState(robot_id, 3)[1])).reshape(3, 3)
     return np.dot(rot, vec)
 
-dest = pb.calculateInverseKinematics(
-    robot, 
-    3, 
-    targetPosition=base + [-.3, -.4, .1]
-)
-print(dest)
-move(robot, dest)
-draw_frame = 1
-print()
-while True:
+if not os.path.exists("./charuco/"):
+    os.mkdir("./charuco/")
+    
+for i, delta in enumerate([[0, -.5, .1], [-.3, -.4, .1], [.3, -.4, .1]]):
+    dest = inv_with_limits(robot, delta)
+    print(dest)
+    for joint, val in enumerate(dest):
+        pb.resetJointState(robot, joint, val)
+    # move(robot, dest)
+    
     cam.set_pos(
         pb.getLinkState(robot, 3)[0],
         transform_vector(robot, [-1, 0, 0]),
-        transform_vector(robot, [.1, -1, 0]),
+        transform_vector(robot, [.1, -1, .1]),
     )
     frame = cam.get_frame()
-    img = cam.get_arucos(frame)
-    
-    if draw_frame:
-        cv2.imshow("window", img)
-    key = cv2.waitKey(1)
-    
-    if key == ord('q'):
-        cam.get_arucos(cam.get_frame(), True)
-        draw_frame = 0
-    if key == ord('w'):
-        break
     pb.stepSimulation()
     time.sleep(1/240)
-cv2.destroyAllWindows()
+cam.calibrate()
+for frame in cam.captured_images:
+    img = cam.process_charuko(frame)
+    while True:
+        cv2.imshow("window", img)
+        key = cv2.waitKey(1)
+        
+        if key == ord('q'):
+            break
+        if key == ord('w'):
+            cv2.destroyAllWindows()
+            exit()
+    
+# cv2.imwrite(f"charuco/charuco_{i}.png", frame)
