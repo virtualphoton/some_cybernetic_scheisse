@@ -33,10 +33,14 @@ _ = pb.loadURDF(
     globalScaling=0.25,
     useFixedBase=True
 )
+
+angle = np.random.random() * 2 * np.pi
+orient = p.getQuaternionFromEuler([0, 0, angle])
+
 robot = pb.loadURDF(
     "dobot.urdf", 
-    basePosition=[0, +0.3, 0],
-    baseOrientation=[0, 0, -1, 0],
+    basePosition=[np.sin(angle) * .3, -np.cos(angle) * .3, 0],
+    baseOrientation=orient,
     useFixedBase=1
 )
 pb.setTimeStep(0.01)  # no idea what this does
@@ -44,7 +48,9 @@ pb.setRealTimeSimulation(0)  # to iterate normally
 
 def inv_with_limits(robot_id, delta):
     base = np.array(pb.getBasePositionAndOrientation(robot)[0])
-    coords = pb.calculateInverseKinematics(robot_id, 3, targetPosition=base + delta)
+    delta_tr = transform_vector(robot_id, delta, "base")
+    print(delta_tr)
+    coords = pb.calculateInverseKinematics(robot_id, 3, targetPosition=base + delta_tr)
     coords = np.array(coords)
     coords[3] = coords[2] - coords[1]
     return coords
@@ -52,10 +58,10 @@ def inv_with_limits(robot_id, delta):
 
 cam = Camera()
 
-def transform_vector(robot_id, vec):
+def transform_vector(robot_id, vec, link=3):
     vec = np.array(vec)
-    rot = np.array(pb.getMatrixFromQuaternion(pb.getLinkState(robot_id, 3)[1])).reshape(3, 3)
-    return np.dot(rot, vec)
+    _, rot_mat = get_pos_data(robot_id, link)
+    return np.dot(rot_mat, vec)
 
 def get_pos_data(robot_id, link):
     if link == "base":
@@ -101,13 +107,13 @@ def calibrate():
 # calibrate()
 cam.load_calib()
 
-deltas = [[0, -.5, .1], [-.3, -.4, .1], [.2, -.3, .2], [.3, -.3, .2]]
+
+deltas = [[0, .5, .1], [.3, .4, .1], [-.2, .3, .2], [-.3, .3, .2]]
     
 for i, delta in enumerate(deltas):
     dest = inv_with_limits(robot, delta)
     for joint, val in enumerate(dest):
         pb.resetJointState(robot, joint, val)
-        
     ef_pos, ef_orient  = get_pos_data(robot, 3)
     
     end_effector_poses.append(get_inv_twist(base_orient, base_pos) @ get_twist(ef_orient, ef_pos))
@@ -121,7 +127,6 @@ for i, delta in enumerate(deltas):
         transform_vector(robot, [.2, -1, -.2]),
     )
     frame = cam.get_frame()
-    # input()
     
 for i, frame in enumerate(cam.captured_images):
     img, rvec, tvec = cam.process_charuko(frame)
@@ -145,11 +150,11 @@ board_twist = np.array([
 ])
 transform_true = (get_inv_twist(base_orient, base_pos) @ board_twist)[np.ix_([0, 1, 3], [0, 1, 3])]
 transform_pred = get_board2base_transform(end_effector_poses, cam_to_checker)
-print(f"{transform_true=}\n{transform_pred}")
+print(f"{transform_true=}\n{transform_pred=}")
 
 cv2.destroyAllWindows()  
 with open("charuco_1/poses.pickle", "wb") as f:
     pickle.dump({"base_to_end": end_effector_poses, "cam_to_checker": cam_to_checker}, f)
     
     
-cam.save("charuco_1")
+cam.save("charuco_2")
