@@ -10,6 +10,8 @@ import os
 from camera import Camera
 import pickle
 
+from eye_hand_calibration import get_board2base_transform
+
 np.set_printoptions(suppress=True)
 
 p = pb
@@ -72,11 +74,37 @@ def get_inv_twist(R, p):
 end_effector_poses = []
 cam_to_checker = []
 base_pos, base_orient = get_pos_data(robot, "base")
-deltas = [[.4, -.4, .1], [-.3, -.4, .1], [.2, -.3, .1], [.3, -.3, .15]]
+
+n_samples = 100
+
+def calibrate():
+    for i in range(n_samples):
+        phi, psi = np.random.random(2) * [np.pi, np.pi / 2]
+        psi += np.pi / 6
+        r = np.random.rand() * .3 + .03
+        cam_pos = np.array([
+            r * np.cos(psi) * np.cos(phi),
+            r * np.cos(psi) * np.sin(phi),
+            r * np.sin(psi)
+        ])
+        pt = [*(np.random.random(2) * .2 - .1), 0]
+        
+        cam.set_pos(
+            cam_pos,
+            [0, 0, 1],
+            pt - cam_pos
+        )
+        frame = cam.get_frame()
+
+    cam.calibrate()
+    
+# calibrate()
+cam.load_calib()
+
+deltas = [[0, -.5, .1], [-.3, -.4, .1], [.2, -.3, .2], [.3, -.3, .2]]
     
 for i, delta in enumerate(deltas):
     dest = inv_with_limits(robot, delta)
-    print(dest)
     for joint, val in enumerate(dest):
         pb.resetJointState(robot, joint, val)
         
@@ -88,17 +116,16 @@ for i, delta in enumerate(deltas):
     #              np.dot(last_twist, [.1, 0, 0, 1])), ef_pos)
     
     cam.set_pos(
-        pb.getLinkState(robot, 3)[0],
-        transform_vector(robot, [-1, 0, 0]),
-        transform_vector(robot, [.4, -1, .1]),
+        pb.getLinkState(robot, 3)[0] + transform_vector(robot, [0, 0, .05]),
+        transform_vector(robot, [-1, 0, .1]),
+        transform_vector(robot, [.2, -1, -.2]),
     )
     frame = cam.get_frame()
     # input()
     
-cam.calibrate()
-for frame in cam.captured_images:
+for i, frame in enumerate(cam.captured_images):
     img, rvec, tvec = cam.process_charuko(frame)
-    cam_to_checker.append((rvec, tvec))
+    cam_to_checker.append(get_twist(cv2.Rodrigues(rvec)[0], tvec))
     
     while True:
         cv2.imshow("window", img)
@@ -109,8 +136,20 @@ for frame in cam.captured_images:
         if key == ord('w'):
             cv2.destroyAllWindows()
             exit()
-            
+
+board_twist = np.array([
+    [1, 0, 0, -.2],
+    [0, -1, 0, .2],
+    [0, 0, -1, 0],
+    [0, 0, 0, 1]
+])
+transform_true = (get_inv_twist(base_orient, base_pos) @ board_twist)[np.ix_([0, 1, 3], [0, 1, 3])]
+transform_pred = get_board2base_transform(end_effector_poses, cam_to_checker)
+print(f"{transform_true=}\n{transform_pred}")
+
+cv2.destroyAllWindows()  
 with open("charuco_1/poses.pickle", "wb") as f:
     pickle.dump({"base_to_end": end_effector_poses, "cam_to_checker": cam_to_checker}, f)
+    
     
 cam.save("charuco_1")

@@ -69,9 +69,10 @@ class Camera:
         for image in self.captured_images:
             image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
             cur_corners, cur_ids, _ = self.detector.detectMarkers(image)
-            matched_points.append(list(
-                map(np.squeeze, self.board.matchImagePoints(cur_corners, cur_ids))
-            ))
+            if cur_ids is not None:
+                matched_points.append(list(
+                    map(np.squeeze, self.board.matchImagePoints(cur_corners, cur_ids))
+                ))
         obj_points, img_points = zip(*matched_points)
 
         ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(
@@ -89,6 +90,13 @@ class Camera:
             if not os.path.exists(f"./{folder}/"):
                 os.mkdir(f"./{folder}/")
             cv2.imwrite(f"{folder}/charuco_{i}.png", frame)
+    
+    def load_calib(self):
+        self.mtx = [[360.77769585,   0.,         639.89330646],
+                    [  0.,         360.62443724, 359.0092385 ],
+                    [  0.,           0.,           1.        ]]
+        self.dist = [[-0.00114422,  0.00073427,  0.00009126,  0.00001122, -0.00017835]]
+        self.mtx, self.dist = map(np.array, (self.mtx, self.dist))
     
     def process_charuko(self, frame):
         assert self.mtx is not None and self.dist is not None
@@ -116,11 +124,11 @@ class Camera:
         )
         
         cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec_check, tvec_check, 0.1)
-        print(rvec_check, tvec_check)
+        # print(rvec_check, tvec_check)
         aruco.drawDetectedMarkers(frame, corners)
         rvecs, tvecs, _ = aruco.estimatePoseSingleMarkers(corners, self.tile_size / 2, self.mtx, self.dist)
-        print()
-        print(rvecs[0], tvecs[0])
+        # print()
+        # print(rvecs[0], tvecs[0])
         
         for rvec, tvec in zip(rvecs, tvecs):
             cv2.drawFrameAxes(frame, self.mtx, self.dist, rvec, tvec, 0.01)
