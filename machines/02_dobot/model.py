@@ -132,6 +132,8 @@ for i, frame in enumerate(cam.captured_images):
     img, rvec, tvec = cam.process_charuko(frame)
     cam_to_checker.append(get_twist(cv2.Rodrigues(rvec)[0], tvec))
     
+    cv2.imwrite(f"charuco_2/charuco_{i}_arucos.png", img)
+    
     while True:
         cv2.imshow("window", img)
         key = cv2.waitKey(1)
@@ -156,5 +158,4 @@ cv2.destroyAllWindows()
 with open("charuco_1/poses.pickle", "wb") as f:
     pickle.dump({"base_to_end": end_effector_poses, "cam_to_checker": cam_to_checker}, f)
     
-    
-cam.save("charuco_2")
+# cam.save("charuco_2")
