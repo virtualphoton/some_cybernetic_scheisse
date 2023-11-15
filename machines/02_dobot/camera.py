@@ -14,7 +14,8 @@ class Camera:
         'height': 720
     }
 
-    def __init__(self, size=None):
+    def __init__(self, size=None, tile_size=.05, marker_size=0.025,
+                 board_size=(8,8),):
         if size is None:
             size = Camera.default_size
         self.size = size
@@ -31,8 +32,9 @@ class Camera:
         self.dictionary = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
         self.parameters =  cv2.aruco.DetectorParameters()
         self.detector = aruco.ArucoDetector(self.dictionary, self.parameters)
-        self.tile_size = 2 * .2 / 8
-        self.board = aruco.CharucoBoard((8, 8), self.tile_size, self.tile_size / 2, self.dictionary)
+        self.tile_size = tile_size
+        self.board = aruco.CharucoBoard(board_size, self.tile_size, marker_size,
+                                        self.dictionary)
         
         self.mtx, self.dist = None, None
 
