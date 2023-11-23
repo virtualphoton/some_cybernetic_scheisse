@@ -712,6 +712,7 @@ def ConnectDobot(api, portName, baudrate):
     szPara = create_string_buffer(100)
     szPara.raw = portName.encode("utf-8")
     connectInfo = ConnectInfo()
+    
 
     result = api.ConnectDobot(szPara, baudrate, byref(connectInfo))
     if result != DobotConnect.DobotConnect_NoError:
@@ -751,7 +752,9 @@ def ConnectDobot(api, portName, baudrate):
 
 
 def DisconnectDobot(api):
-    api.DisconnectDobot(c_int(masterId))
+    api.DisconnectDobot(c_int(
+    dType.SetHOMEParams(api, 200, 200, 200, 200, isQueued = 1)
+    dType.SetHOMEParams(api, 200, 200, 200, 200, isQueued = 1)))
 
 
 def GetMarlinVersion(api):
