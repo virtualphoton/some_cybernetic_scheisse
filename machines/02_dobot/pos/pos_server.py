@@ -1,3 +1,5 @@
+#!/home/photon/miniconda3/envs/robotics/bin/python
+
 import json
 import os
 import asyncio
@@ -10,7 +12,7 @@ os.environ["LD_LIBRARY_PATH"] = ":/usr/DobotDllOutput"
 
 
 api = dT.load()
-connected = not dT.ConnectDobot(api, "192.168.43.221", 115200)[0]
+connected = not dT.ConnectDobot(api, "192.168.124.186", 115200)[0]
 if not connected:
     raise RuntimeError("couldt't connect")
 print("potentialy connected, sending init commands... (if hasn't printed 'ready' in several seconds, then restart)")
