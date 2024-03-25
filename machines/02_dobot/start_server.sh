@@ -1,1 +1,1 @@
-/home/photon/anaconda3/envs/robotics/bin/python pos_server.py
+/home/photon/miniconda3/envs/robotics/bin/python pos_server.py

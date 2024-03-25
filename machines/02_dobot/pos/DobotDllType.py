@@ -747,34 +747,34 @@ def SetQueuedCmdStartExec(api):
         while (True):
             result = api.SetQueuedCmdStartExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while (True):
             result = api.SetQueuedCmdStartExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while (True):
             result = api.SetQueuedCmdStartExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
         while(True):
             result = api.SetQueuedCmdStartExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while (True):
             result = api.SetQueuedCmdStartExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -786,34 +786,34 @@ def SetQueuedCmdStopExec(api):
         while (True):
             result = api.SetQueuedCmdStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while (True):
             result = api.SetQueuedCmdStopExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while (True):
             result = api.SetQueuedCmdStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
         while(True):
             result = api.SetQueuedCmdStartExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while (True):
             result = api.SetQueuedCmdStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -825,34 +825,34 @@ def SetQueuedCmdForceStopExec(api):
         while (True):
             result = api.SetQueuedCmdForceStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while (True):
             result = api.SetQueuedCmdForceStopExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while (True):
             result = api.SetQueuedCmdForceStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
         while(True):
             result = api.SetQueuedCmdForceStopExec( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while (True):
             result = api.SetQueuedCmdForceStopExec( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -862,7 +862,7 @@ def SetQueuedCmdStartDownload(api,  totalLoop, linePerLoop):
     while(True):
         result = api.SetQueuedCmdStartDownload(  totalLoop, linePerLoop)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -871,7 +871,7 @@ def SetQueuedCmdStopDownload(api):
     while(True):
         result = api.SetQueuedCmdStopDownload( )
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -883,34 +883,34 @@ def SetQueuedCmdClear(api):
         while(True):
             result = api.SetQueuedCmdClear( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while (True):
             result = api.SetQueuedCmdClear( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while (True):
             result = api.SetQueuedCmdClear( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
         while(True):
             result = api.SetQueuedCmdClear( c_int(-1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while (True):
             result = api.SetQueuedCmdClear( )
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     return [result]
@@ -922,7 +922,7 @@ def SetDeviceSN(api, str):
     while(True):
         result = api.SetDeviceSN(  szPara)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -932,7 +932,7 @@ def GetDeviceSN(api):
     while(True):
         result = api.GetDeviceSN(  szPara,  25)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     ret = szPara.value.decode("utf-8") 
@@ -945,7 +945,7 @@ def SetDeviceName(api, str):
     while(True):
         result = api.SetDeviceName(  szPara)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -955,7 +955,7 @@ def SetDeviceNumName(api, num):
     while(True):
         result = api.SetDeviceName(  cNum)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -965,7 +965,7 @@ def GetDeviceName(api):
     while(True):
         result = api.GetDeviceName(  szPara,  100)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     ret = szPara.value.decode("utf-8")
@@ -978,7 +978,7 @@ def GetDeviceVersion(api):
         while(True):
             result = api.GetDeviceVersion( c_int(-1), byref(deviceVersion))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         return [deviceVersion.fw_majorVersion, deviceVersion.fw_minorVersion, deviceVersion.fw_revision, deviceVersion.fw_alphaVersion,
@@ -987,7 +987,7 @@ def GetDeviceVersion(api):
         while(True):
             result = api.GetDeviceVersion(  byref(deviceVersion))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         return [deviceVersion.fw_majorVersion, deviceVersion.fw_minorVersion, deviceVersion.fw_revision, deviceVersion.fw_alphaVersion,
@@ -997,7 +997,7 @@ def GetDeviceVersion(api):
         while(True):
             result = api.GetDeviceVersion(  byref(deviceVersion))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         return [deviceVersion.fw_majorVersion, deviceVersion.fw_minorVersion, deviceVersion.fw_revision, deviceVersion.fw_alphaVersion]
@@ -1017,7 +1017,7 @@ def SetDeviceWithL(api, isWithL, version=0, isQueued=0):
         print(tempSlaveId)
         result = api.SetDeviceWithL( c_int(tempSlaveId), c_bool(isWithL), c_uint8(version), c_bool(isQueued), byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1036,7 +1036,7 @@ def GetDeviceWithL(api):
     while(True):
         result = api.GetDeviceWithL( c_int(tempSlaveId), byref(isWithL))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isWithL.value]
@@ -1047,7 +1047,7 @@ def GetDeviceTime(api):
     while(True):
         result = api.GetDeviceTime(  byref(time))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [time.value]
@@ -1065,7 +1065,7 @@ def GetDeviceID(api):
                 break
             else:
                 CommunicateCount += 1
-                dSleep(5)
+                dSleep(1)
                 continue
         timeout = False
         break
@@ -1080,7 +1080,7 @@ def GetDeviceInfo(api):
     while(True):
         result = api.GetDeviceInfo(  byref(info))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [info.deviceRunTime, info.devicePowerOn, info.devicePowerOff]
@@ -1092,7 +1092,7 @@ def ResetPose(api, manual, rearArmAngle, frontArmAngle):
     while(True):
         result = api.ResetPose(  manual, c_rearArmAngle, c_frontArmAngle)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -1102,7 +1102,7 @@ def GetPose(api):
     while(True):
         result = api.GetPose(  byref(pose))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pose.x, pose.y, pose.z,pose.rHead, pose.joint1Angle, pose.joint2Angle, pose.joint3Angle, pose.joint4Angle]
@@ -1121,7 +1121,7 @@ def GetPoseL(api):
     while(True):
         result = api.GetPoseL( c_int(tempSlaveId), byref(l))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     #parker add 20190524  判断返回的值是否为空
@@ -1136,7 +1136,7 @@ def GetKinematics(api):
     while(True):
         result = api.GetKinematics(  byref(kinematics))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [kinematics.velocity, kinematics.acceleration]
@@ -1149,7 +1149,7 @@ def GetAlarmsState(api,  maxLen=1000):
     while(True):
         result = api.GetAlarmsState(  alarmsState, byref(len),  maxLen)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [alarmsState.raw, len.value]
@@ -1159,7 +1159,7 @@ def ClearAllAlarmsState(api):
     while(True):
         result = api.ClearAllAlarmsState( )
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -1169,7 +1169,7 @@ def GetUserParams(api):
     while(True):
         result = api.GetUserParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.params1,param.params2,param.params3,param.params4,param.params5,param.params6,param.params7,param.params8]
@@ -1185,7 +1185,7 @@ def SetHOMEParams(api,  x,  y,  z,  r,  isQueued=0):
     while(True):
         result = api.SetHOMEParams(  byref(param),  isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1196,7 +1196,7 @@ def GetHOMEParams(api):
     while(True):
         result = api.GetHOMEParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.x, param.y, param.z, param.r]
@@ -1213,7 +1213,7 @@ def SetHOMECmd(api, temp, isQueued=0):
         while(True):
             result = api.SetHOMECmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
@@ -1222,13 +1222,13 @@ def SetHOMECmd(api, temp, isQueued=0):
         while(True):
             result = api.SetHOMECmd( c_int(-1), byref(cmd), isQueued, byref(queuedCmdIndex1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while(True):
             result = api.SetHOMECmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
@@ -1237,7 +1237,7 @@ def SetHOMECmd(api, temp, isQueued=0):
         while(True):
             result = api.SetHOMECmd( c_int(-1), byref(cmd), isQueued, byref(queuedCmdIndex1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
@@ -1245,7 +1245,7 @@ def SetHOMECmd(api, temp, isQueued=0):
         while(True):
             result = api.SetHOMECmd( c_int(slaveDevType), byref(cmd), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -1260,7 +1260,7 @@ def SetAutoLevelingCmd(api, controlFlag, precision, isQueued=0):
     while(True):
         result = api.SetAutoLevelingCmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1271,7 +1271,7 @@ def GetAutoLevelingResult(api):
     while(True):
         result = api.GetAutoLevelingResult(  byref(precision))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [precision.value]
@@ -1282,7 +1282,7 @@ def SetArmOrientation(api,  armOrientation, isQueued=0):
     while(True):
         result = api.SetArmOrientation(  armOrientation, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1293,7 +1293,7 @@ def GetArmOrientation(api):
     while(True):
         result = api.GetArmOrientation(  byref(armOrientation))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [armOrientation.value]
@@ -1303,7 +1303,7 @@ def SetHHTTrigMode(api, hhtTrigMode):
     while(True):
         result = api.SetHHTTrigMode(  hhtTrigMode)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -1313,7 +1313,7 @@ def GetHHTTrigMode(api):
     while(True):
         result = api.GetHHTTrigMode(  byref(hhtTrigMode))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [hhtTrigMode.value]
@@ -1323,7 +1323,7 @@ def SetHHTTrigOutputEnabled(api, isEnabled):
     while(True):
         result = api.SetHHTTrigOutputEnabled(  isEnabled)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -1333,7 +1333,7 @@ def GetHHTTrigOutputEnabled(api):
     while(True):
         result = api.GetHHTTrigOutputEnabled(  byref(isEnabled))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isEnabled.value]
@@ -1357,7 +1357,7 @@ def SetEndEffectorParams(api, xBias, yBias, zBias, isQueued=0):
     while(True):
         result = api.SetEndEffectorParams(  byref(param),  isQueued,  byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1368,7 +1368,7 @@ def GetEndEffectorParams(api):
     while(True):
         result = api.GetEndEffectorParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.xBias, param.yBias, param.zBias]
@@ -1379,7 +1379,7 @@ def SetEndEffectorLaser(api, enableCtrl,  on, isQueued=0):
     while(True):
         result = api.SetEndEffectorLaser(  enableCtrl,  on,  isQueued,  byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1391,7 +1391,7 @@ def GetEndEffectorLaser(api):
     while(True):
         result = api.GetEndEffectorLaser(  byref(isCtrlEnabled),  byref(isOn))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isCtrlEnabled.value, isOn.value]
@@ -1402,7 +1402,7 @@ def SetEndEffectorSuctionCup(api, enableCtrl,  on, isQueued=0):
     while(True):
         result = api.SetEndEffectorSuctionCup(  enableCtrl,  on,  isQueued,  byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1414,7 +1414,7 @@ def GetEndEffectorSuctionCup(api):
     while(True):
         result = api.GetEndEffectorSuctionCup(  byref(enableCtrl),  byref(isOn))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isOn.value]
@@ -1425,7 +1425,7 @@ def SetEndEffectorGripper(api, enableCtrl,  on, isQueued=0):
     while(True):
         result = api.SetEndEffectorGripper(  enableCtrl,  on,  isQueued,  byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1437,7 +1437,7 @@ def GetEndEffectorGripper(api):
     while(True):
         result = api.GetEndEffectorGripper(  byref(enableCtrl),  byref(isOn))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isOn.value]
@@ -1457,7 +1457,7 @@ def SetJOGJointParams(api, j1Velocity, j1Acceleration, j2Velocity, j2Acceleratio
     while(True):
         result = api.SetJOGJointParams(  byref(jogParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1468,7 +1468,7 @@ def GetJOGJointParams(api):
     while(True):
         result = api.GetJOGJointParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.joint1Velocity, param.joint1Acceleration, param.joint2Velocity, param.joint2Acceleration, param.joint3Velocity, param.joint3Acceleration, param.joint4Velocity, param.joint4Acceleration]
@@ -1488,7 +1488,7 @@ def SetJOGCoordinateParams(api, xVelocity, xAcceleration, yVelocity, yAccelerati
     while(True):
         result = api.SetJOGCoordinateParams(  byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1499,7 +1499,7 @@ def GetJOGCoordinateParams(api):
     while(True):
         result = api.GetJOGCoordinateParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.xVelocity, param.xAcceleration, param.yVelocity, param.yVelocity, param.zVelocity, param.zAcceleration, param.rVelocity, param.rAcceleration]
@@ -1521,7 +1521,7 @@ def SetJOGLParams(api, velocity, acceleration, isQueued=0):
     while(True):
         result = api.SetJOGLParams( c_int(tempSlaveId), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1540,7 +1540,7 @@ def GetJOGLParams(api):
     while(True):
         result = api.GetJOGLParams( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.velocity,  param.acceleration]
@@ -1557,34 +1557,34 @@ def SetJOGCommonParams(api, value_velocityratio, value_accelerationratio, isQueu
         while(True):
             result = api.SetJOGCommonParams(  byref(param), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while(True):
             result = api.SetJOGCommonParams( c_int(-1), byref(param), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while(True):
             result = api.SetJOGCommonParams(  byref(param), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.Idle:
         while(True):
             result = api.SetJOGCommonParams( c_int(-1), byref(param), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while(True):
             result = api.SetJOGCommonParams(  byref(param), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -1596,7 +1596,7 @@ def GetJOGCommonParams(api):
     while(True):
         result = api.GetJOGCommonParams(  byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.velocityRatio, param.accelerationRatio]
@@ -1623,20 +1623,20 @@ def SetJOGCmd(api, isJoint, cmd, isQueued=0):
         while(True):
             result = api.SetJOGCmd( c_int(-1), byref(cmdParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while(True):
             result = api.SetJOGCmd(  byref(cmdParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while(True):
             result = api.SetJOGCmd( c_int(tempSlaveId), byref(cmdParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     return [queuedCmdIndex.value]
@@ -1656,7 +1656,7 @@ def SetPTPJointParams(api, j1Velocity, j1Acceleration, j2Velocity, j2Acceleratio
     while(True):
         result = api.SetPTPJointParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1667,7 +1667,7 @@ def GetPTPJointParams(api):
     while(True):
         result = api.GetPTPJointParams(  byref(pbParam))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.joint1Velocity,pbParam.joint1Acceleration,pbParam.joint2Velocity,pbParam.joint2Acceleration,pbParam.joint3Velocity,pbParam.joint3Acceleration,pbParam.joint4Velocity,pbParam.joint4Acceleration]
@@ -1683,7 +1683,7 @@ def SetPTPCoordinateParams(api, xyzVelocity, xyzAcceleration, rVelocity,  rAccel
     while(True):
         result = api.SetPTPCoordinateParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1694,7 +1694,7 @@ def GetPTPCoordinateParams(api):
     while(True):
         result = api.GetPTPCoordinateParams(  byref(pbParam))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.xyzVelocity, pbParam.rVelocity, pbParam.xyzAcceleration, pbParam.rAcceleration]
@@ -1716,7 +1716,7 @@ def SetPTPLParams(api, velocity, acceleration, isQueued=0):
     while(True):
         result = api.SetPTPLParams( c_int(tempSlaveId), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1734,7 +1734,7 @@ def GetPTPLParams(api):
     while(True):
         result = api.GetPTPLParams( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.velocity,  param.acceleration]
@@ -1749,7 +1749,7 @@ def SetPTPJumpParams(api, jumpHeight, zLimit, isQueued=0):
     while(True):
         result = api.SetPTPJumpParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1760,7 +1760,7 @@ def GetPTPJumpParams(api):
     while(True):
         result = api.GetPTPJumpParams(  byref(pbParam))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.jumpHeight, pbParam.zLimit]
@@ -1777,27 +1777,27 @@ def SetPTPCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
         while(True):
             result = api.SetPTPCommonParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     elif masterDevType == DevType.Conntroller and slaveDevType == DevType.MagicianLite:
         while(True):
             result = api.SetPTPCommonParams( c_int(-1), byref(pbParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         while(True):
             result = api.SetPTPCommonParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     else:
         while(True):
             result = api.SetPTPCommonParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
 
@@ -1809,7 +1809,7 @@ def GetPTPCommonParams(api):
     while(True):
         result = api.GetPTPCommonParams(  byref(pbParam ))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.velocityRatio, pbParam.accelerationRatio]
@@ -1884,7 +1884,7 @@ def SetCPRHoldEnable(api, isEnable):
     while(True):
         result = api.SetCPRHoldEnable(  c_bool(isEnable))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -1894,7 +1894,7 @@ def GetCPRHoldEnable(api):
     while(True):
         result = api.GetCPRHoldEnable(  byref(isEnable))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isEnable.value]
@@ -1910,7 +1910,7 @@ def SetCPParams(api, planAcc, juncitionVel, acc, realTimeTrack = 0,  isQueued=0)
     while(True):
         result = api.SetCPParams(  byref(parm), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1921,7 +1921,7 @@ def GetCPParams(api):
     while(True):
         result = api.GetCPParams(  byref(parm))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [parm.planAcc, parm.juncitionVel, parm.acc, parm.realTimeTrack]
@@ -1955,8 +1955,9 @@ def SetCP2Cmd(api, cpMode, x, y, z, isQueued=0):
     queuedCmdIndex = c_uint64(0)
 
     while(True):
-        result = api.SetCP2Cmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
+        result = api.SetCPCmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
+            print(101)
             dSleep(2)
             continue
         break
@@ -1971,7 +1972,7 @@ def SetCPCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
     while(True):
         result = api.SetCPCommonParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -1982,7 +1983,7 @@ def GetCPCommonParams(api):
     while(True):
         result = api.GetCPCommonParams(  byref(pbParam ))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.velocityRatio, pbParam.accelerationRatio]
@@ -2015,7 +2016,7 @@ def SetARCParams(api,  xyzVelocity, rVelocity, xyzAcceleration, rAcceleration,  
     while(True):
         result = api.SetARCParams(  byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2025,7 +2026,7 @@ def GetARCParams(api):
     while(True):
         result = api.GetARCParams(  byref(parm))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [parm.xyzVelocity, parm.rVelocity, parm.xyzAcceleration, parm.rAcceleration]
@@ -2039,7 +2040,7 @@ def SetARCCmd(api, cirPoint, toPoint,  isQueued=0):
     while(True):
         result = api.SetARCCmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2053,7 +2054,7 @@ def SetCircleCmd(api, cirPoint, toPoint,  isQueued=0):
     while(True):
         result = api.SetCircleCmd(  byref(cmd), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2067,7 +2068,7 @@ def SetARCCommonParams(api, velocityRatio, accelerationRatio, isQueued=0):
     while(True):
         result = api.SetARCCommonParams(  byref(pbParam), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2078,20 +2079,20 @@ def GetARCCommonParams(api):
     while(True):
         result = api.GetARCCommonParams(  byref(pbParam ))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [pbParam.velocityRatio, pbParam.accelerationRatio]
 
 
-def SetWAITCmd(api, waitTime, isQueued=0):
+def SetWAITCmd(api, waitTime, isQueued=1):
     param = WAITCmd()
     param.waitTime = int(waitTime)
     queuedCmdIndex = c_uint64(0)
     while(True):
         result = api.SetWAITCmd(  byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2107,7 +2108,7 @@ def SetTRIGCmd(api, address, mode,  condition,  threshold,  isQueued=0):
     while(True):
         result = api.SetTRIGCmd(  byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2127,7 +2128,7 @@ def SetIOMultiplexing(api, address, multiplex, isQueued=0):
     while(True):
         result = api.SetIOMultiplexing( c_int(tempSlaveId), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2145,7 +2146,7 @@ def GetIOMultiplexing(api,  addr):
     while(True):
         result = api.GetIOMultiplexing( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.multiplex]
@@ -2165,7 +2166,7 @@ def SetIODO(api, address, level, isQueued=0):
     while(True):
         result = api.SetIODO( c_int(tempSlaveId), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2183,7 +2184,7 @@ def GetIODO(api,  addr):
     while(True):
         result = api.GetIODO( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.level]
@@ -2204,7 +2205,7 @@ def SetIOPWM(api, address, frequency, dutyCycle,  isQueued=0):
     while(True):
         result = api.SetIOPWM( c_int(tempSlaveId), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2222,7 +2223,7 @@ def GetIOPWM(api,  addr):
     while(True):
         result = api.GetIOPWM( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.frequency,  param.dutyCycle]
@@ -2240,7 +2241,7 @@ def GetIODI(api, addr):
     while(True):
         result = api.GetIODI( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.level]
@@ -2261,7 +2262,7 @@ def SetEMotor(api, index, isEnabled, speed,  isQueued=0):
     while(True):
         result = api.SetEMotor( c_int(tempSlaveId), byref(emotor), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2283,7 +2284,7 @@ def SetEMotorS(api, index, isEnabled, speed, distance,  isQueued=0):
     while(True):
         result = api.SetEMotorS( c_int(tempSlaveId), byref(emotorS), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2301,7 +2302,7 @@ def GetIOADC(api, addr):
     while(True):
         result = api.GetIOADC( c_int(tempSlaveId), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.value]
@@ -2313,7 +2314,7 @@ def SetAngleSensorStaticError(api,  rearArmAngleError, frontArmAngleError):
     while(True):
         result = api.SetAngleSensorStaticError(  c_rearArmAngleError, c_frontArmAngleError)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -2324,7 +2325,7 @@ def GetAngleSensorStaticError(api):
     while(True):
         result = api.GetAngleSensorStaticError(  byref(rearArmAngleError),  byref(frontArmAngleError))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [rearArmAngleError.value, frontArmAngleError.value]
@@ -2336,7 +2337,7 @@ def SetAngleSensorCoef(api,  rearArmAngleCoef, frontArmAngleCoef):
     while(True):
         result = api.SetAngleSensorCoef(  c_rearArmAngleCoef, c_frontArmAngleCoef)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -2347,7 +2348,7 @@ def GetAngleSensorCoef(api):
     while(True):
         result = api.GetAngleSensorCoef(  byref(rearArmAngleCoef),  byref(frontArmAngleCoef))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [rearArmAngleCoef.value, frontArmAngleCoef.value]
@@ -2358,7 +2359,7 @@ def SetBaseDecoderStaticError(api,  baseDecoderError):
     while(True):
         result = api.SetBaseDecoderStaticError(  c_baseDecoderError)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -2368,7 +2369,7 @@ def GetBaseDecoderStaticError(api):
     while(True):
         result = api.GetBaseDecoderStaticError(  byref(baseDecoderError))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [baseDecoderError.value]
@@ -2382,7 +2383,7 @@ def GetWIFIConnectStatus(api):
             break
         result = api.GetWIFIConnectStatus(  byref(isConnected))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isConnected.value]
@@ -2393,7 +2394,7 @@ def SetWIFIConfigMode(api,  enable):
             break
         result = api.SetWIFIConfigMode(  enable)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -2405,7 +2406,7 @@ def GetWIFIConfigMode(api):
             break
         result = api.GetWIFIConfigMode(  byref(isEnabled))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isEnabled.value]
@@ -2419,7 +2420,7 @@ def SetWIFISSID(api,  ssid):
             break
         result = api.SetWIFISSID(  szPara)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -2431,7 +2432,7 @@ def GetWIFISSID(api):
             break
         result = api.GetWIFISSID(  szPara,  25)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     ssid = szPara.value.decode("utf-8") 
@@ -2446,7 +2447,7 @@ def SetWIFIPassword(api,  password):
             break
         result = api.SetWIFIPassword(  szPara)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -2458,7 +2459,7 @@ def GetWIFIPassword(api):
             break
         result = api.GetWIFIPassword(  szPara,  25)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     password = szPara.value.decode("utf-8") 
@@ -2478,7 +2479,7 @@ def SetWIFIIPAddress(api,  dhcp,  addr1,  addr2,  addr3,  addr4):
             break
         result = api.SetWIFIIPAddress(  byref(wifiIPAddress))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -2490,7 +2491,7 @@ def GetWIFIIPAddress(api):
             break
         result = api.GetWIFIIPAddress(  byref(wifiIPAddress))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [c_uint8(wifiIPAddress.dhcp).value,  c_uint8(wifiIPAddress.addr1).value,  c_uint8(wifiIPAddress.addr2).value,   c_uint8(wifiIPAddress.addr3).value,  c_uint8(wifiIPAddress.addr4).value]
@@ -2507,7 +2508,7 @@ def SetWIFINetmask(api, addr1,  addr2,  addr3,  addr4):
             break
         result = api.SetWIFINetmask(  byref(wifiNetmask))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
         
@@ -2519,7 +2520,7 @@ def GetWIFINetmask(api):
             break
         result = api.GetWIFINetmask(  byref(wifiNetmask))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [c_uint8(wifiNetmask.addr1).value,  c_uint8(wifiNetmask.addr2).value,  c_uint8(wifiNetmask.addr3).value,  c_uint8(wifiNetmask.addr4).value]
@@ -2536,7 +2537,7 @@ def SetWIFIGateway(api, addr1,  addr2,  addr3,  addr4):
             break
         result = api.SetWIFIGateway(  byref(wifiGateway))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -2548,7 +2549,7 @@ def GetWIFIGateway(api):
             break
         result = api.GetWIFIGateway(  byref(wifiGateway))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [c_uint8(wifiGateway.addr1).value,  c_uint8(wifiGateway.addr2).value,  c_uint8(wifiGateway.addr3).value,  c_uint8(wifiGateway.addr4).value]
@@ -2565,7 +2566,7 @@ def SetWIFIDNS(api, addr1,  addr2,  addr3,  addr4):
             break
         result = api.SetWIFIDNS(  byref(wifiDNS))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -2577,7 +2578,7 @@ def GetWIFIDNS(api):
             break
         result = api.GetWIFIDNS(  byref(wifiDNS))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [c_uint8(wifiDNS.addr1).value,  c_uint8(wifiDNS.addr2).value,  c_uint8(wifiDNS.addr3).value,  c_uint8(wifiDNS.addr4).value]
@@ -2597,7 +2598,7 @@ def SetColorSensor(api, isEnable, colorPort, version=0):
     while(True):
         result = api.SetColorSensor( c_int(tempSlaveId), enable, port, version, 1, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -2615,7 +2616,7 @@ def GetColorSensor(api):
     while(True):
         result = api.GetColorSensor( c_int(tempSlaveId), byref(r),  byref(g),  byref(b))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [r.value, g.value, b.value]
@@ -2635,7 +2636,7 @@ def SetInfraredSensor(api,  isEnable, infraredPort, version=0):
     while(True):
         result = api.SetInfraredSensor( c_int(tempSlaveId), enable, port, version, 1, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     
@@ -2652,7 +2653,7 @@ def GetInfraredSensor(api, infraredPort):
     while(True):
         result = api.GetInfraredSensor( c_int(tempSlaveId), port,  byref(value))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [value.value]
@@ -2667,7 +2668,7 @@ def SetLostStepParams(api, threshold, isQueued=0):
     while(True):
         result = api.SetLostStepParams(  t, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2678,7 +2679,7 @@ def SetLostStepCmd(api, isQueued=0):
     while(True):
         result = api.SetLostStepCmd(  isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -2690,14 +2691,14 @@ def GetUART4PeripheralsType(api):
         while(True):
             result = api.GetUART4PeripheralsType( c_int(-1), byref(type))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break 
     elif masterDevType == DevType.Magician:
         while(True):
             result = api.GetUART4PeripheralsType(  byref(type))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
     return [type.value]
@@ -2715,7 +2716,7 @@ def GetDeviceVersionEx(api):       #2019.6.25 song 控制盒+Magician Lite时，
         while(True):
             result = api.GetDeviceVersion( c_int(-1), byref(deviceVersion1))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         list_MagicBoxVersion = [deviceVersion1.fw_majorVersion, deviceVersion1.fw_minorVersion, deviceVersion1.fw_revision, deviceVersion1.fw_alphaVersion,
@@ -2723,7 +2724,7 @@ def GetDeviceVersionEx(api):       #2019.6.25 song 控制盒+Magician Lite时，
         while(True):
             result = api.GetDeviceVersion(  byref(deviceVersion2))
             if result != DobotCommunicate.DobotCommunicate_NoError:
-                dSleep(5)
+                dSleep(1)
                 continue
             break
         list_MagicianLiteVersion = [deviceVersion2.fw_majorVersion, deviceVersion2.fw_minorVersion, deviceVersion2.fw_revision, deviceVersion2.fw_alphaVersion,
@@ -2794,21 +2795,21 @@ def SetEndEffectorParamsEx(api, xBias, yBias, zBias, isQueued=0):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
         
 def SetPTPJointParamsEx(api, j1Velocity, j1Acceleration, j2Velocity, j2Acceleration, j3Velocity, j3Acceleration, j4Velocity, j4Acceleration, isQueued=0):
     ret = SetPTPJointParams(api, j1Velocity, j1Acceleration, j2Velocity, j2Acceleration, j3Velocity, j3Acceleration, j4Velocity, j4Acceleration, isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
         
 def SetPTPCoordinateParamsEx(api, xyzVelocity, xyzAcceleration, rVelocity,  rAcceleration,  isQueued=0):
     ret = SetPTPCoordinateParams(api, xyzVelocity, xyzAcceleration, rVelocity,  rAcceleration,  isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 def SetPTPLParamsEx(api, lVelocity, lAcceleration, isQueued=0):
     ret = GetDeviceWithL(api)
@@ -2820,28 +2821,28 @@ def SetPTPLParamsEx(api, lVelocity, lAcceleration, isQueued=0):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
         
 def SetPTPCommonParamsEx(api, velocityRatio, accelerationRatio, isQueued=0):
     ret = SetPTPCommonParams(api, velocityRatio, accelerationRatio, isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
         
 def SetPTPJumpParamsEx(api, jumpHeight, maxJumpHeight, isQueued=0):
     ret = SetPTPJumpParams(api, jumpHeight, maxJumpHeight, isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
         
 def SetPTPCmdEx(api, ptpMode, x, y, z, rHead, isQueued=0):
     ret = SetPTPCmd(api, ptpMode, x, y, z, rHead, isQueued)
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
     
 def SetIOMultiplexingEx(api, address, multiplex, isQueued=0):
     ret = SetIOMultiplexing(api, address, multiplex, isQueued)
@@ -2849,12 +2850,12 @@ def SetIOMultiplexingEx(api, address, multiplex, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
         
 def SetEndEffectorSuctionCupEx(api, enableCtrl,  on, isQueued=0):
     ret = SetEndEffectorSuctionCup(api, enableCtrl,  on, isQueued)
@@ -2862,12 +2863,12 @@ def SetEndEffectorSuctionCupEx(api, enableCtrl,  on, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 def SetEndEffectorGripperEx(api, enableCtrl,  on, isQueued=0):
     ret = SetEndEffectorGripper(api, enableCtrl,  on, isQueued)
@@ -2875,12 +2876,12 @@ def SetEndEffectorGripperEx(api, enableCtrl,  on, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
         
 def SetEndEffectorLaserEx(api, enableCtrl, power, isQueued=0):
     SetIOMultiplexingEx(api, 2,  1, isQueued)
@@ -2894,12 +2895,12 @@ def SetIODOEx(api, address, level, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
         
 def SetEMotorEx(api, index, isEnabled, speed,  isQueued=0):
     ret = SetEMotor(api, index, isEnabled, speed,  isQueued)
@@ -2907,12 +2908,12 @@ def SetEMotorEx(api, index, isEnabled, speed,  isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
     
 def SetEMotorSEx(api, index, isEnabled, speed, distance,  isQueued=0):
     ret = SetEMotorS(api, index, isEnabled, speed, distance,   isQueued)
@@ -2920,12 +2921,12 @@ def SetEMotorSEx(api, index, isEnabled, speed, distance,  isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
     
 def SetIOPWMEx(api, address, frequency, dutyCycle,  isQueued=0):
     ret = SetIOPWM(api, address, frequency, dutyCycle,  isQueued)
@@ -2933,12 +2934,12 @@ def SetIOPWMEx(api, address, frequency, dutyCycle,  isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetPTPWithLCmdEx(api, ptpMode, x, y, z, rHead,  l, isQueued=0):
@@ -3025,7 +3026,7 @@ def SetAutoLevelingCmdEx(api, controlFlag, precision, isQueued=1):
     while(True):
         if index <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
    
 def SetLostStepCmdEx(api, isQueued=1):
@@ -3033,7 +3034,7 @@ def SetLostStepCmdEx(api, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetUpgradeFWReadyCmd(api,fwSize, md5):
@@ -3059,7 +3060,7 @@ def SetUpgradeFWReadyCmd(api,fwSize, md5):
     while(True):
         result = api.SetUpgradeFWReadyCmd( c_int(tempSlaveId), byref(upgradeFWReadyCmd))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -3088,7 +3089,7 @@ def GetUpgradeFWReadyCmd(api,fwSize, md5):
     while(True):
         result = api.GetUpgradeFWReadyCmd( c_int(tempSlaveId), byref(upgradeFWReadyCmd), byref(isUpgrade))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [isUpgrade.value]
@@ -3106,7 +3107,7 @@ def SetTRIGCmdEx(api, address, mode,  condition,  threshold,  isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetARCCmdEx(api, cirPoint, toPoint, isQueued=1):
@@ -3114,14 +3115,14 @@ def SetARCCmdEx(api, cirPoint, toPoint, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetMotorMode(api, mode):
     while(True):
         result = api.SetMotorMode(  c_int(mode))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break 
 
@@ -3131,7 +3132,7 @@ def GetMotorMode(api):
     while(True):
         result = api.GetMotorMode(  byref(mode))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break 
     return [mode.value]
@@ -3148,7 +3149,7 @@ def SetIOMultiplexingExt(api, address, multiplex, isQueued=0):
     while(True):
         result = api.SetIOMultiplexing( c_int(-1), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3160,7 +3161,7 @@ def GetIOMultiplexingExt(api, addr):
     while(True):
         result = api.GetIOMultiplexing( c_int(-1), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.multiplex]
@@ -3172,7 +3173,7 @@ def GetIOADCExt(api, addr):
     while(True):
         result = api.GetIOADC( c_int(-1), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.value]
@@ -3187,7 +3188,7 @@ def SetIOPWMExt(api, address, frequency, dutyCycle,  isQueued=0):
     while(True):
         result = api.SetIOPWM( c_int(-1), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3199,7 +3200,7 @@ def GetIOPWMExt(api, addr):
     while(True):
         result = api.GetIOPWM( c_int(-1), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.frequency,  param.dutyCycle]
@@ -3211,7 +3212,7 @@ def GetIODIExt(api, addr):
     while(True):
         result = api.GetIODI( c_int(-1), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.level]
@@ -3225,7 +3226,7 @@ def SetIODOExt(api, address, level, isQueued=0):
     while(True):
         result = api.SetIODO( c_int(-1), byref(param), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3237,7 +3238,7 @@ def GetIODOExt(api, addr):
     while(True):
         result = api.GetIODO( c_int(-1), byref(param))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [param.level]
@@ -3252,7 +3253,7 @@ def SetEMotorExt(api, index, isEnabled, speed, isQueued=0):
     while (True):
         result = api.SetEMotor( c_int(-1), byref(emotor), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3268,7 +3269,7 @@ def SetEMotorSExt(api, index, isEnabled, speed, distance, isQueued=0):
     while (True):
         result = api.SetEMotorS( c_int(-1), byref(emotorS), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3282,7 +3283,7 @@ def SetColorSensorExt(api, isEnable, colorPort, version=0, isQueued=0):
     while(True):
         result = api.SetColorSensor( c_int(-1), enable, port, version, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3296,7 +3297,7 @@ def SetInfraredSensorExt(api,  isEnable, infraredPort, version=0, isQueued=0):
     while(True):
         result = api.SetInfraredSensor( c_int(-1), enable, port, version, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3309,7 +3310,7 @@ def GetInfraredSensorExt(api, infraredPort):
     while(True):
         result = api.GetInfraredSensor( c_int(-1), port,  byref(value))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [value.value]
@@ -3322,7 +3323,7 @@ def GetColorSensorExt(api, index):
     while(True):
         result = api.GetColorSensor( c_int(-1), byref(r),  byref(g),  byref(b))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [r.value, g.value, b.value][index]
@@ -3335,12 +3336,12 @@ def SetIOMultiplexingExtEx(api, address, multiplex, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 def SetIOPWMExtEx(api, address, frequency, dutyCycle,  isQueued=0):
     ret = SetIOPWMExt(api, address, frequency, dutyCycle,  isQueued)
@@ -3348,12 +3349,12 @@ def SetIOPWMExtEx(api, address, frequency, dutyCycle,  isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetIODOExtEx(api, address, level, isQueued=0):
@@ -3362,12 +3363,12 @@ def SetIODOExtEx(api, address, level, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetEMotorExtEx(api, index, isEnabled, speed, isQueued=0):
@@ -3376,12 +3377,12 @@ def SetEMotorExtEx(api, index, isEnabled, speed, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetEMotorSExtEx(api, index, isEnabled, speed, distance, isQueued=0):
@@ -3390,12 +3391,12 @@ def SetEMotorSExtEx(api, index, isEnabled, speed, distance, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetColorSensorExtEx(api, isEnable, colorPort, version=0, isQueued=0):
@@ -3404,12 +3405,12 @@ def SetColorSensorExtEx(api, isEnable, colorPort, version=0, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetInfraredSensorExtEx(api,  isEnable, infraredPort, version=0, isQueued=0):
@@ -3418,12 +3419,12 @@ def SetInfraredSensorExtEx(api,  isEnable, infraredPort, version=0, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 #2019.08.21 by song add Seeed Sensor API    
@@ -3442,7 +3443,7 @@ def GetSeeedColorSensorExt(api):
     while(True):
         result = api.GetSeeedColorSensor( c_int(tempSlaveId), byref(r),  byref(g),  byref(b), byref(Cct))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [r.value, g.value, b.value, Cct.value]
@@ -3460,7 +3461,7 @@ def SetSeeedColorSensorExt(api, SeeedPort,isQueued=0):
     while(True):
         result = api.SetSeeedColorSensor( c_int(tempSlaveId), port, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3478,7 +3479,7 @@ def GetSeeedDistanceSensorExt(api, SeeedPort):
     while(True):
         result = api.GetSeeedDistanceSensor( c_int(tempSlaveId), port, byref(distance))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [distance.value]
@@ -3496,7 +3497,7 @@ def SetSeeedTempSensorExt(api, SeeedPort, isQueued=0):
     while(True):
         result = api.SetSeeedTempSensor( c_int(tempSlaveId), port, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3514,7 +3515,7 @@ def GetSeeedTempSensorExt(api):
     while(True):
         result = api.GetSeeedTempSensor( c_int(tempSlaveId), byref(tem),  byref(hum))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [tem.value, hum.value]
@@ -3532,7 +3533,7 @@ def SetSeeedLightSensorExt(api, SeeedPort, isQueued=0):
     while(True):
         result = api.SetSeeedLightSensor( c_int(tempSlaveId), port, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3549,7 +3550,7 @@ def GetSeeedLightSensorExt(api):
     while(True):
         result = api.GetSeeedLightSensor( c_int(tempSlaveId), byref(lux))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [lux.value]
@@ -3568,7 +3569,7 @@ def SetSeeedRgbExt(api, SeeedPort, Rgb, isQueued=0):
     while(True):
         result = api.SetSeeedRgb( c_int(tempSlaveId), port, rgb, isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3581,12 +3582,12 @@ def SetSeeedColorSensorExtEx(api, SeeedPort,isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetSeeedTempSensorExtEx(api, SeeedPort, isQueued=0):
@@ -3595,12 +3596,12 @@ def SetSeeedTempSensorExtEx(api, SeeedPort, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetSeeedLightSensorExtEx(api, SeeedPort, isQueued=0):
@@ -3609,12 +3610,12 @@ def SetSeeedLightSensorExtEx(api, SeeedPort, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
 
 
 def SetSeeedRgbExtEx(api, SeeedPort, Rgb, isQueued=0):
@@ -3623,19 +3624,19 @@ def SetSeeedRgbExtEx(api, SeeedPort, Rgb, isQueued=0):
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
                 break
-            dSleep(5)
+            dSleep(1)
     else:
         while(True):
             if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
                 break
-            dSleep(5)
+            dSleep(1)
     
 
 def RestartMagicBox(api):
     while(True):
         result = api.RestartMagicBox( c_int(-1))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -3648,7 +3649,7 @@ def SetLostStepEnableAndParamsCmd(api, enable, threshlod, isQueued=0):
     while(True):
         result = api.SetLostStepEnableAndParamsCmd(  c_uint8(enable), c_float(threshlod), isQueued, byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3660,7 +3661,7 @@ def GetLostStepEnableAndParamsCmd(api):
     while(True):
         result = api.GetLostStepEnableAndParamsCmd(  byref(enable), byref(threshlod))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [enable.value, threshlod.value]
@@ -3672,7 +3673,7 @@ def SetEndEffectorType(api, endType=0, isQueued=0):
     while(True):
         result = api.SetEndEffectorType(  isQueued, c_uint8(endType), byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break  
     return[queuedCmdIndex.value]
@@ -3683,7 +3684,7 @@ def GetEndEffectorType(api):
     while(True):
         result = api.GetEndEffectorType(  byref(endType))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [endType.value]
@@ -3694,7 +3695,7 @@ def SetServoAngle(api, servoId, angle, isQueued=0):
     while(True):
         result = api.SetServoAngle( c_int(-1), isQueued, c_uint8(servoId), c_float(angle), byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break 
     return [queuedCmdIndex.value]
@@ -3705,7 +3706,7 @@ def GetServoAngle(api, servoId):
     while(True):
         result = api.GetServoAngle( c_int(-1),  c_uint8(servoId) ,byref(angle))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [angle.value]
@@ -3716,7 +3717,7 @@ def SetArmSpeedRatio(api, paramsMode, speedRatio, isQueued=0):
     while(True):
         result = api.SetArmSpeedRatio(  isQueued, c_uint8(paramsMode), c_uint8(speedRatio),  byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break 
     return [queuedCmdIndex.value]
@@ -3728,7 +3729,7 @@ def GetArmSpeedRatio(api, paramsMode=0):
     while(True):
         result = api.GetArmSpeedRatio(   c_uint8(paramsMode), byref(speedRatio))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return[speedRatio.value]
@@ -3739,7 +3740,7 @@ def SetLSpeedRatio(api, paramsMode, speedRatio, isQueued=0):
     while(True):
         result = api.SetLSpeedRatio( c_int(-1), isQueued, c_uint8(paramsMode), c_uint8(speedRatio), byref(queuedCmdIndex))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return [queuedCmdIndex.value]
@@ -3750,7 +3751,7 @@ def GetLSpeedRatio(api, paramsMode):
     while(True):
         result = api.GetLSpeedRatio( c_int(-1), c_uint8(paramsMode), byref(speedRatio))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
     return[speedRatio.value]
@@ -3762,7 +3763,7 @@ def PrintInfo(api, info):
     while(True):
         result = api.PrintInfo( c_int(-1), szPara)
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -3771,7 +3772,7 @@ def SetProgbar(api, progbar):
     while(True):
         result = api.SetProgbar( c_int(-1), c_uint8(progbar))
         if result != DobotCommunicate.DobotCommunicate_NoError:
-            dSleep(5)
+            dSleep(1)
             continue
         break
 
@@ -3782,7 +3783,7 @@ def SetEndEffectorTypeEx(api, endType=0, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetServoAngleEx(api, servoId, angle, isQueued=1):
@@ -3790,7 +3791,7 @@ def SetServoAngleEx(api, servoId, angle, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetArmSpeedRatioEx(api, paramsMode=0, speedRatio=0, isQueued=1):
@@ -3798,7 +3799,7 @@ def SetArmSpeedRatioEx(api, paramsMode=0, speedRatio=0, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[0]:
             break
-        dSleep(5)
+        dSleep(1)
 
 
 def SetLSpeedRatioEx(api, paramsMode, speedRatio, isQueued=1):
@@ -3806,4 +3807,4 @@ def SetLSpeedRatioEx(api, paramsMode, speedRatio, isQueued=1):
     while(True):
         if ret[0] <= GetQueuedCmdCurrentIndex(api)[1]:
             break
-        dSleep(5)
+        dSleep(1)
